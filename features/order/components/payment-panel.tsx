@@ -6,6 +6,7 @@ import { useActionState, useEffect, useRef, useState } from 'react';
 
 import { BottomCta } from '@/components/ui/bottom-cta';
 import { Section } from '@/components/ui/section';
+import { Spinner } from '@/components/ui/spinner';
 import type { Instant, OrderNo } from '@/lib/api/types';
 import { cn } from '@/lib/cn';
 
@@ -78,8 +79,12 @@ export function PaymentPanel({
           {state && (
             <p
               role={state.kind === 'error' ? 'alert' : 'status'}
-              className={cn('text-center text-[13px]', state.kind === 'error' ? 'text-fg-critical' : 'text-fg')}
+              className={cn(
+                'flex items-start justify-center gap-2 text-center text-[13px]',
+                state.kind === 'error' ? 'text-fg-critical' : 'text-fg',
+              )}
             >
+              {state.kind === 'confirming' && <Spinner size="sm" className="mt-0.5" />}
               {state.message}
             </p>
           )}

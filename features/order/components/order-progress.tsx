@@ -3,12 +3,13 @@ import type { ReactNode } from 'react';
 
 import { Poller } from '@/components/poller';
 import { Section, SectionTitle } from '@/components/ui/section';
+import { Spinner } from '@/components/ui/spinner';
 import type { IssuanceWaiting, MySimDetail } from '@/lib/api/types';
 import { formatKstDateTime } from '@/lib/format/kst';
 import { WAITING_ACTION_LABELS, WAITING_STAGE_LABELS } from '@/lib/format/labels';
 
 import { refundOrderAction } from '../actions';
-import { DEFAULT_POLL_INTERVAL_SECONDS, isMoving, POLL_MAX_DURATION_MS, resultCopyOf } from '../progress';
+import { DEFAULT_POLL_INTERVAL_SECONDS, isMoving, isStillWorking, POLL_MAX_DURATION_MS, resultCopyOf } from '../progress';
 import { RefundButton } from './refund-button';
 
 const POLL_TIMEOUT_HINT =
@@ -37,7 +38,10 @@ export function OrderProgress({ detail }: { detail: MySimDetail }) {
     <Section className="space-y-4 text-center">
       {copy && (
         <div>
-          <p className="text-[19px] font-bold text-fg">{copy.title}</p>
+          {isStillWorking(detail.orderStatus) && <Spinner size="lg" className="mx-auto mb-3 block" />}
+          <p className="text-[19px] font-bold text-fg" role="status">
+            {copy.title}
+          </p>
           <p className="mt-2 text-[14px] text-fg-muted">{copy.description}</p>
         </div>
       )}
@@ -60,7 +64,7 @@ function WaitingSection({
   return (
     <>
       <Section className="space-y-3 text-center">
-        <span aria-hidden className="mx-auto block size-3 animate-ping rounded-full bg-brand" />
+        <Spinner size="lg" className="mx-auto block" />
         <p className="text-[19px] font-bold text-fg" role="status">
           {stage.title}
         </p>

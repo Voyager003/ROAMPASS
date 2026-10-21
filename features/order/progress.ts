@@ -22,6 +22,16 @@ export const DEFAULT_POLL_INTERVAL_SECONDS = 3;
  */
 export const POLL_MAX_DURATION_MS = 5 * 60_000;
 
+/**
+ * Result screens where the server is still working (automatic refund after a failed issuance, PG
+ * cancellation in progress): shown with a spinner, though the page stops polling at REFUNDING.
+ */
+const STILL_WORKING: ReadonlySet<OrderStatus> = new Set(['ISSUE_FAILED', 'REFUNDING']);
+
+export function isStillWorking(status: OrderStatus): boolean {
+  return STILL_WORKING.has(status);
+}
+
 export type ResultCopy = { title: string; description: string };
 
 /** Headline of an order that left the waiting stage (or never had one). */

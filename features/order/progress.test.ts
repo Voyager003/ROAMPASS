@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { ORDER_STATUSES } from '@/lib/api/types';
 
-import { isMoving, resultCopyOf } from './progress';
+import { isMoving, isStillWorking, resultCopyOf } from './progress';
 
 describe('결제 후 진행 상태', () => {
   it('polls_only_while_server_moves_the_order', () => {
@@ -12,6 +12,10 @@ describe('결제 후 진행 상태', () => {
 
   it('does_not_poll_for_usim_pickup_because_it_waits_for_the_user', () => {
     expect(isMoving('PICKUP_READY')).toBe(false);
+  });
+
+  it('shows_a_spinner_while_refund_is_still_running', () => {
+    expect(ORDER_STATUSES.filter(isStillWorking)).toEqual(['ISSUE_FAILED', 'REFUNDING']);
   });
 
   it('has_a_result_copy_for_every_status_without_its_own_screen', () => {
