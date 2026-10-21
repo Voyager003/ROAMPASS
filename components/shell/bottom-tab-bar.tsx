@@ -34,7 +34,10 @@ function CurrentTabList() {
 
 function TabList({ pathname }: { pathname: string | null }) {
   return (
-    <nav aria-label="주 메뉴" className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-layer">
+    <nav
+      aria-label="주 메뉴"
+      className="fixed bottom-0 left-1/2 z-20 w-full max-w-[480px] -translate-x-1/2 border-t border-line bg-layer sm:border-x"
+    >
       <ul className="mx-auto flex max-w-[480px]">
         {TABS.map(({ href, label, Icon, exact }) => {
           const active =

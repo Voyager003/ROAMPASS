@@ -8,7 +8,7 @@ import { BottomTabBar } from '@/components/shell/bottom-tab-bar';
 export default function TabsLayout({ children }: LayoutProps<'/'>) {
   return (
     <>
-      <header className="sticky top-0 z-20 bg-layer">
+      <header className="sticky top-0 z-20 border-b border-line bg-layer">
         <div className="flex h-14 items-center px-5">
           <Link href="/" className="text-[19px] font-extrabold tracking-tight text-fg-brand">
             ROAMPASS
