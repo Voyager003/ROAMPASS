@@ -15,7 +15,7 @@
 
 ## 진행 규칙 (요약, 상세는 CLAUDE.md §3)
 
-- Phase마다 브랜치 `phase/f{N}-{이름}`. 시작 시 sub-step 목록을 확인받고, sub-step마다 코드 → 검증 → 커밋. 모든 sub-step이 끝나면 확인 후 `main`에 `--no-ff` 머지.
+- Phase마다 브랜치 `phase/f{N}-{이름}`. 시작 시 sub-step 목록을 확인받고, sub-step마다 코드 → 검증 → 커밋. 모든 sub-step이 끝나면 PR을 만들어 "Create a merge commit"으로 `main`에 머지(사용자가 PR 생성·머지).
 - 범례: `[ ]` 대기 · `[~]` 진행 중 · `[x]` 완료 · `[-]` 포기(사유는 README "미구현" 절에)
 
 ---

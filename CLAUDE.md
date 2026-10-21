@@ -100,8 +100,9 @@ Each Phase in `docs/plan.md` (F0, F1, …) is split into sub-steps (F1-1, F1-2, 
 ### Branch Strategy (one branch per Phase)
 - Branch name: `phase/f{N}-{short-name}` (e.g. `phase/f0-foundation`, `phase/f1-purchase`, `phase/f2-admin`).
 - When a Phase starts, create its branch from the latest `main`. All sub-step commits of that Phase go to this branch only — never commit Phase work directly to `main`.
-- A Phase branch is merged into `main` only when **all** of its sub-steps are done and `npm run lint && npx tsc --noEmit && npm run build` pass on the branch (plus `npm test` once tests exist). Merge with `git merge --no-ff` so the merge commit marks the Phase boundary in `git log --graph`.
-- The merge itself happens only after the user confirms. Merge commit message: `merge: F{N} {Phase 이름} 완료` (Korean, like other commits).
+- A Phase branch is merged into `main` only when **all** of its sub-steps are done and `npm run lint && npx tsc --noEmit && npm test && npm run build` pass on the branch.
+- **Merge through a GitHub pull request**, same as the backend repository (`docs/decisions.md` #11): the user pushes the Phase branch, creates the PR, and merges with **"Create a merge commit"** so the merge commit marks the Phase boundary in `git log --graph`. Claude only writes the PR title and body (title one line, body a `* 작업` list, no AI attribution) and never merges locally.
+- After the merge, update the local `main` (`git switch main && git pull`) before creating the next Phase branch.
 - Do not start the next Phase branch until the previous Phase is merged into `main`.
 - No squash, no rebase of pushed history, no force-push. The assignment evaluates the order in which problems were solved through the commit history.
 - Fixes found after a Phase is merged go in the Phase currently in progress (as a `fix:` commit on that branch), not as a commit directly on `main`.
@@ -119,7 +120,7 @@ F1-1: code → [STOP] → user validation → wait for instruction → commit (o
   ↓ "continue"
 F1-2: code → [STOP] → user validation → wait for instruction → commit (on phase branch)
   ↓ ... all sub-steps done, checks green
-[STOP] → user confirms → git switch main && git merge --no-ff phase/f1-purchase
+[STOP] → Claude writes PR title/body → user pushes, opens the PR, merges with "Create a merge commit" → git switch main && git pull
 ```
 Refactoring follows the same flow.
 
@@ -160,7 +161,7 @@ Tool: **Vitest 4.1** (`npm test`). Run date/time tests under more than one `TZ` 
 | `test` | Adding/modifying tests only |
 | `chore` | Build, config, dependencies |
 | `docs` | Documentation only |
-| `merge` | `--no-ff` merge commit of a completed Phase branch into `main` |
+| `merge` | (GitHub creates it: "Merge pull request #N …" when a Phase PR is merged) |
 
 Examples
 ```
@@ -172,7 +173,7 @@ chore: Vitest 설정 및 lib/format 테스트 추가
 docs: decisions.md에 폴링 선택 이유 기록
 ```
 - Body (optional): one or two lines on why it was done this way and which alternatives were rejected. Required for commits that involve a design decision or a `'use client'` boundary.
-- Commits go on the current Phase branch, never directly on `main`. `main` only receives `--no-ff` merges of completed Phases.
+- Commits go on the current Phase branch, never directly on `main`. `main` only receives merge commits of completed Phase PRs.
 - Claude proposes a commit message draft and commits only after the user confirms. No trailers (Co-Authored-By, etc.).
 - Commit unit = one problem solved. One screen or one component per commit is the usual size.
 
@@ -222,7 +223,7 @@ docs: decisions.md에 폴링 선택 이유 기록
 - Never add a data-fetching library, state library, or another UI component library without a `docs/decisions.md` entry and user confirmation.
 - Never import SEED components through namespaces (`Badge.Root`) — flat names only.
 - Never move to the next sub-step without user confirmation.
-- Never commit Phase work directly to `main`, and never merge a Phase branch without user confirmation.
+- Never commit Phase work directly to `main`, and never merge a Phase branch locally (the user merges the PR on GitHub).
 - Never commit with failing lint / type-check / build.
 - Never hardcode secrets or the backend URL in source.
 - Never put a status-to-label mapping inline in a component.
