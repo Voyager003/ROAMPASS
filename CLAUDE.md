@@ -87,7 +87,7 @@ This project runs **Next.js 16.4.2**, which differs from training data. Before u
 - **Screens read the real backend from the start** (`docs/decisions.md` #25). The fixture implementation was removed: the backend (ROAMPASS_SERVER) already serves every API, so screens are built and checked against it directly. Run it locally per its README (PostgreSQL + `roampass-api` 8080 + `mock-pg` 8081 + `mock-supplier` 8082).
 - `lib/api/types.ts` mirrors the backend's response records and enums exactly (field names as Java record components). When the backend changes, update the type first and let the compiler find the screens.
 - To see a screen in states that are hard to reach by clicking (issuance failure, refund retries, callback loss, signature failure), use the backend's fault injection (`/mock/pg/config`, `/mock/supplier/config`, supplier profile state changes) as described in the backend README "시연 방법".
-- `docs/api-coverage.md` lists every backend user/admin API with the client method and the screen that uses it. Update it in each sub-step; F4-1 requires every row checked in the browser.
+- `docs/api-coverage.md` lists every backend user/admin API with the client method and the screen that uses it. Update it in each sub-step; the integration sub-step (F1-11) requires every row checked in the browser.
 
 ---
 
@@ -98,7 +98,7 @@ Each Phase in `docs/plan.md` (F0, F1, …) is split into sub-steps (F1-1, F1-2, 
 **Each Phase is worked on in its own branch** (see "Branch Strategy" below).
 
 ### Branch Strategy (one branch per Phase)
-- Branch name: `phase/f{N}-{short-name}` (e.g. `phase/f0-foundation`, `phase/f1-purchase`, `phase/f2-admin`).
+- Branch name: `phase/f{N}-{short-name}` (e.g. `phase/f0-foundation`, `phase/f1-screens`, `phase/f2-deploy`).
 - When a Phase starts, create its branch from the latest `main`. All sub-step commits of that Phase go to this branch only — never commit Phase work directly to `main`.
 - A Phase branch is merged into `main` only when **all** of its sub-steps are done and `npm run lint && npx tsc --noEmit && npm test && npm run build` pass on the branch.
 - **Merge through a GitHub pull request**, same as the backend repository (`docs/decisions.md` #11): the user pushes the Phase branch, creates the PR, and merges with **"Create a merge commit"** so the merge commit marks the Phase boundary in `git log --graph`. Claude only writes the PR title and body (title one line, body a `* 작업` list, no AI attribution) and never merges locally.
@@ -115,7 +115,7 @@ Each Phase in `docs/plan.md` (F0, F1, …) is split into sub-steps (F1-1, F1-2, 
 4. **Never auto-proceed**: Do not move to the next sub-step without an explicit instruction.
 
 ```
-git switch -c phase/f1-purchase main
+git switch -c phase/f1-screens main
 F1-1: code → [STOP] → user validation → wait for instruction → commit (on phase branch)
   ↓ "continue"
 F1-2: code → [STOP] → user validation → wait for instruction → commit (on phase branch)
@@ -130,8 +130,8 @@ Refactoring follows the same flow.
 **3. Docs updated** — what was added to `docs/decisions.md` / README, checklist items ticked in `docs/plan.md`, and the proposed next sub-step
 
 ### Validation before every commit
-- `npm run lint` passes, `npx tsc --noEmit` passes, `npm run build` passes.
-- Screens touched by the sub-step were opened in the browser against the local backend, in every state they render (use backend fault injection for failure states).
+- `npm run lint` passes, `npx tsc --noEmit` passes, `npm test` passes, `npm run build` passes.
+- Screens are built against the backend contract (`lib/api/types.ts`, `docs/api-coverage.md`) in each sub-step. **Running them against the local backend happens once, in the final integration sub-step of the screens Phase** (`docs/decisions.md` #39): every row of `docs/api-coverage.md` and every state, using backend fault injection for failure states.
 - No secrets in `git diff --cached`. `.env.local` is never staged.
 - `docs/decisions.md` updated if a choice was made.
 
@@ -210,7 +210,7 @@ docs: decisions.md에 폴링 선택 이유 기록
 | File | When |
 |---|---|
 | `README.md` | Submission deliverable, assignment §2.5 items only: run instructions, the eight questions (frontend perspective; Q1, Q6, Q7 are the frontend's main answers), demo, deployment, architecture, assumptions, unimplemented items, time spent & AI usage. No task-management content |
-| `docs/plan.md` | Task checklist (F0–F6), open questions. Update progress as sub-steps complete |
+| `docs/plan.md` | Task checklist (F0–F3), open questions. Update progress as sub-steps complete |
 | `docs/decisions.md` | Immediately whenever a technical/design choice is made. `date | choice | alternatives | reason` |
 
 ---

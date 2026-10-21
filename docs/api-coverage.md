@@ -11,21 +11,21 @@
 | 2 | `POST /api/orders` `{planId, travelStartDate}` + `Idempotency-Key` → 201 | X-User-Id | `createOrder` | `/plans/[country]` 결제하러 가기(F1-3) | [~] | 400 `INVALID_REQUEST`·`INVALID_TRAVEL_START_DATE`·`INVALID_IDEMPOTENCY_KEY`, 404 `PLAN_NOT_FOUND`, 409 `IDEMPOTENCY_KEY_REUSED`, 같은 키 재제출 → 같은 주문 |
 | 3 | `GET /api/orders/{orderNo}` (`expiresAt` 포함) | X-User-Id | `getOrder` | `/orders/[orderNo]` 결제 대기 단계의 만료 카운트다운(F1-4). 그 외 정보는 `GET /api/sims/{orderNo}`가 상위 집합 | [~] | 404 `ORDER_NOT_FOUND` |
 | 4 | `POST /api/orders/{orderNo}/pay` → `{paymentStatus, orderStatus}` | X-User-Id | `payOrder` | `/orders/[orderNo]`(F1-4) | [~] | 409 `ORDER_NOT_PAYABLE`·`PAYMENT_IN_PROGRESS`, `paymentStatus=REQUESTED`(PG 응답 유실) |
-| 5 | `GET /api/sims?page&size` | X-User-Id | `listMySims` | `/my/sims`(F3-1) | [~] | 400 `INVALID_PAGE` |
-| 6 | `GET /api/sims/{orderNo}` (`refundable`, `sim`, `waiting`) | X-User-Id | `getMySim` | `/orders/[orderNo]`(F1-4·F1-5 결제·발급 대기), `/my/sims/[orderNo]`(F3-2) | [~] | 404 `ORDER_NOT_FOUND`, `waiting.stage`·`overdue`·`actions` |
-| 7 | `POST /api/sims/{orderNo}/qr-viewed` → 204 | X-User-Id | `markQrViewed` | `/my/sims/[orderNo]` QR 열기(F3-3) | [~] | 404 `SIM_NOT_FOUND` |
-| 8 | `POST /api/orders/{orderNo}/usim/register` `{iccid}` | X-User-Id | `registerUsimIccid` | `/my/sims/[orderNo]` 유심 등록(F3-4) | [~] | 400 `INVALID_ICCID`, 409 `ORDER_NOT_REGISTRABLE`·`ICCID_ALREADY_REGISTERED`·`CONFLICT` |
-| 9 | `POST /api/orders/{orderNo}/refund` → 202 | X-User-Id | `requestRefund` | `/orders/[orderNo]` 발급 대기 `REQUEST_REFUND`(F1-5), `/my/sims/[orderNo]`(F3-2) | [~] | 409 `ORDER_NOT_REFUNDABLE`·`SIM_NOT_REFUNDABLE`·`REFUND_CONFLICT` |
-| 10 | `GET /admin/orders?status&paymentStatus&installStatus&simType&from&to&page&size` | X-Admin-Id | `listAdminOrders` | `/admin/orders`(F2-1) | [~] | 401 `MISSING_ADMIN_ID`, 400 `INVALID_PAGE`, `asOf` |
-| 11 | `GET /admin/orders/{orderNo}` | X-Admin-Id | `getAdminOrder` | `/admin/orders/[orderNo]`(F2-2) | [~] | `timeline[].actor` 문자열, `callbacks[]` |
-| 12 | `GET /admin/issues` | X-Admin-Id | `listAdminIssues` | `/admin/issues`(F2-4) | [~] | 4개 묶음 + `stuckThresholdMinutes` |
-| 13 | `POST /admin/orders/{orderNo}/refund` `{reason}` | X-Admin-Id | `refundOrder` | `/admin/orders/[orderNo]` 조치(F2-3) | [~] | 400 `ADMIN_REASON_REQUIRED`, 409 `ORDER_NOT_REFUNDABLE`·`SIM_NOT_REFUNDABLE`·`ACTION_CONFLICT` |
-| 14 | `POST /admin/orders/{orderNo}/reissue` `{reason}` | X-Admin-Id | `reissueOrder` | `/admin/orders/[orderNo]` 조치(F2-3) | [~] | 409 `ORDER_NOT_REISSUABLE`·`ACTION_CONFLICT` |
+| 5 | `GET /api/sims?page&size` | X-User-Id | `listMySims` | `/my/sims`(F1-9) | [~] | 400 `INVALID_PAGE` |
+| 6 | `GET /api/sims/{orderNo}` (`refundable`, `sim`, `waiting`) | X-User-Id | `getMySim` | `/orders/[orderNo]`(F1-4·F1-5 결제·발급 대기), `/my/sims/[orderNo]`(F1-9) | [~] | 404 `ORDER_NOT_FOUND`, `waiting.stage`·`overdue`·`actions` |
+| 7 | `POST /api/sims/{orderNo}/qr-viewed` → 204 | X-User-Id | `markQrViewed` | `/my/sims/[orderNo]` QR 열기(F1-10) | [~] | 404 `SIM_NOT_FOUND` |
+| 8 | `POST /api/orders/{orderNo}/usim/register` `{iccid}` | X-User-Id | `registerUsimIccid` | `/my/sims/[orderNo]` 유심 등록(F1-10) | [~] | 400 `INVALID_ICCID`, 409 `ORDER_NOT_REGISTRABLE`·`ICCID_ALREADY_REGISTERED`·`CONFLICT` |
+| 9 | `POST /api/orders/{orderNo}/refund` → 202 | X-User-Id | `requestRefund` | `/orders/[orderNo]` 발급 대기 `REQUEST_REFUND`(F1-5), `/my/sims/[orderNo]`(F1-9) | [~] | 409 `ORDER_NOT_REFUNDABLE`·`SIM_NOT_REFUNDABLE`·`REFUND_CONFLICT` |
+| 10 | `GET /admin/orders?status&paymentStatus&installStatus&simType&from&to&page&size` | X-Admin-Id | `listAdminOrders` | `/admin/orders`(F1-6) | [~] | 401 `MISSING_ADMIN_ID`, 400 `INVALID_PAGE`, `asOf` |
+| 11 | `GET /admin/orders/{orderNo}` | X-Admin-Id | `getAdminOrder` | `/admin/orders/[orderNo]`(F1-7) | [~] | `timeline[].actor` 문자열, `callbacks[]` |
+| 12 | `GET /admin/issues` | X-Admin-Id | `listAdminIssues` | `/admin/issues`(F1-8) | [~] | 4개 묶음 + `stuckThresholdMinutes` |
+| 13 | `POST /admin/orders/{orderNo}/refund` `{reason}` | X-Admin-Id | `refundOrder` | `/admin/orders/[orderNo]` 조치(F1-7) | [~] | 400 `ADMIN_REASON_REQUIRED`, 409 `ORDER_NOT_REFUNDABLE`·`SIM_NOT_REFUNDABLE`·`ACTION_CONFLICT` |
+| 14 | `POST /admin/orders/{orderNo}/reissue` `{reason}` | X-Admin-Id | `reissueOrder` | `/admin/orders/[orderNo]` 조치(F1-7) | [~] | 409 `ORDER_NOT_REISSUABLE`·`ACTION_CONFLICT` |
 
 ## 백엔드 명세 중 프론트가 쓰지 않기로 한 것
 
 - 백엔드 CORS 설정(`roampass.cors.*`): 브라우저가 백엔드를 직접 부르지 않는 BFF 구조라 거치지 않는다.
 
-## 최종 확인 (F4-1)
+## 최종 확인 (F1-11)
 
 백엔드 장애 주입(PG 지연·승인 실패·웹훅 중복, 공급사 발급 실패·콜백 누락)을 켠 상태로 위 화면을 모두 돌려 보고, 화면이 깨지지 않고 올바른 안내를 보이는지 확인한다. 결과는 README "시연 방법"에 적는다.
