@@ -134,27 +134,6 @@ export type CallbackSource = 'PG' | 'SUPPLIER';
 export type HistoryTargetType = 'ORDER' | 'PAYMENT' | 'REFUND' | 'SIM_PROFILE';
 
 // ---------------------------------------------------------------------------
-// Waiting-screen rules (used by the Poller)
-// ---------------------------------------------------------------------------
-
-/**
- * Order states at which the user's waiting screen has nothing more to wait for.
- * - ISSUED / PICKUP_READY: success paths
- * - REFUNDED / EXPIRED: closed
- * - NEEDS_ATTENTION: only an operator can move it, so polling would not change anything
- * Not included: ISSUE_FAILED and REFUNDING, because the automatic refund is still in progress.
- * PENDING is waited on only right after a payment attempt whose result is not known yet
- * (the pay action returned paymentStatus REQUESTED, or a second click got 409 PAYMENT_IN_PROGRESS).
- */
-export const ORDER_WAIT_END_STATUSES = [
-  'ISSUED',
-  'PICKUP_READY',
-  'REFUNDED',
-  'EXPIRED',
-  'NEEDS_ATTENTION',
-] as const satisfies readonly OrderStatus[];
-
-// ---------------------------------------------------------------------------
 // Plans — GET /api/plans
 // ---------------------------------------------------------------------------
 

@@ -18,13 +18,17 @@ export default function AdminLayout({ children }: LayoutProps<'/admin'>) {
               주문
             </NavLink>
             <NavLink href="/admin/issues" tone="dark">
-              이상 건
+              처리 대기
             </NavLink>
           </nav>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-4">
             <Suspense fallback={null}>
               <IdentityChip role="admin" tone="dark" />
             </Suspense>
+            {/* Demo only: lets a reviewer move between the two sides (docs/decisions.md #45). */}
+            <Link href="/" className="text-xs text-fg-inverted/80 underline underline-offset-2 hover:text-fg-inverted">
+              사용자 화면
+            </Link>
           </div>
         </div>
       </header>

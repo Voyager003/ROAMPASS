@@ -9,7 +9,7 @@ export function BottomCta({ children }: { children: ReactNode }) {
   return (
     <>
       <div aria-hidden className="h-24" />
-      <div className="fixed inset-x-0 bottom-0 z-20 bg-layer/95 backdrop-blur">
+      <div className="fixed bottom-0 left-1/2 z-20 w-full max-w-[480px] -translate-x-1/2 border-t border-line bg-layer/95 backdrop-blur sm:border-x">
         <div className="mx-auto grid max-w-[480px] px-5 pt-3 pb-[max(env(safe-area-inset-bottom),16px)]">{children}</div>
       </div>
     </>

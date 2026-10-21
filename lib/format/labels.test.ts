@@ -4,6 +4,7 @@ import { INSTALL_STATUSES, ISSUE_TYPES, ORDER_STATUSES, PAYMENT_STATUSES, REFUND
 
 import {
   formatActor,
+  formatHistoryStatus,
   formatCountry,
   formatRefundBlockReason,
   formatUsageDays,
@@ -23,7 +24,7 @@ const groups: Array<[string, readonly string[], Record<string, StatusLabel>]> = 
   ['결제', PAYMENT_STATUSES, PAYMENT_STATUS_LABELS],
   ['설치', INSTALL_STATUSES, INSTALL_STATUS_LABELS],
   ['환불 요청', REFUND_STATUSES, REFUND_STATUS_LABELS],
-  ['이상 건', ISSUE_TYPES, ISSUE_TYPE_LABELS],
+  ['처리 대기', ISSUE_TYPES, ISSUE_TYPE_LABELS],
 ];
 
 describe.each(groups)('%s 상태 라벨', (_name, statuses, labels) => {
@@ -64,5 +65,18 @@ describe('신호·사유·국가 표시', () => {
     // AA is a user-assigned code with no name; J1 is not a valid region code at all.
     expect(formatCountry('AA')).toBe('AA');
     expect(formatCountry('J1')).toBe('J1');
+  });
+});
+
+describe('타임라인 상태 문구', () => {
+  it('reads_the_status_in_the_table_of_its_target', () => {
+    expect(formatHistoryStatus('ORDER', 'PENDING')).toBe('결제 대기');
+    expect(formatHistoryStatus('REFUND', 'PENDING')).toBe('PG 취소 대기');
+    expect(formatHistoryStatus('PAYMENT', 'REQUESTED')).toBe('승인 대기');
+    expect(formatHistoryStatus('SIM_PROFILE', 'QR_VIEWED')).toBe('QR 확인함');
+  });
+
+  it('shows_unknown_status_as_given', () => {
+    expect(formatHistoryStatus('ORDER', 'SOMETHING_NEW')).toBe('SOMETHING_NEW');
   });
 });

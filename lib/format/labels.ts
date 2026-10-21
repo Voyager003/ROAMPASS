@@ -1,6 +1,10 @@
 import type {
+  CallbackOutcome,
+  HistoryTargetType,
   InstallStatus,
+  IssuanceStatus,
   IssuanceWaitingAction,
+  IssuanceWaitingStage,
   IssueType,
   MySimDetail,
   OrderStatus,
@@ -52,11 +56,52 @@ export const REFUND_STATUS_LABELS: Record<RefundStatus, StatusLabel> = {
   GAVE_UP: { label: '재시도 소진', tone: 'danger' },
 };
 
+export const ISSUANCE_STATUS_LABELS: Record<IssuanceStatus, StatusLabel> = {
+  PENDING: { label: '요청 중', tone: 'progress' },
+  ACCEPTED: { label: '공급사 접수', tone: 'progress' },
+  COMPLETED: { label: '발급 완료', tone: 'success' },
+  FAILED: { label: '실패', tone: 'danger' },
+};
+
+export const CALLBACK_OUTCOME_LABELS: Record<CallbackOutcome, StatusLabel> = {
+  RECEIVED: { label: '수신', tone: 'neutral' },
+  PROCESSED: { label: '반영', tone: 'success' },
+  ALREADY_APPLIED: { label: '이미 반영됨', tone: 'neutral' },
+  AMOUNT_MISMATCH: { label: '금액 불일치', tone: 'warning' },
+  TARGET_NOT_FOUND: { label: '대상 없음', tone: 'warning' },
+  IGNORED: { label: '무시', tone: 'neutral' },
+  SIGNATURE_INVALID: { label: '서명 불일치', tone: 'danger' },
+};
+
+export const HISTORY_TARGET_LABELS: Record<HistoryTargetType, string> = {
+  ORDER: '주문',
+  PAYMENT: '결제',
+  REFUND: '환불',
+  SIM_PROFILE: 'SIM',
+};
+
+/**
+ * Timeline statuses arrive as strings whose meaning depends on the target (an order's PENDING is not a
+ * refund's PENDING). Unknown values are shown as given, so a new backend status is visible, not hidden.
+ */
+export function formatHistoryStatus(targetType: HistoryTargetType, status: string): string {
+  const table: Record<string, StatusLabel> =
+    targetType === 'ORDER'
+      ? ORDER_STATUS_LABELS
+      : targetType === 'PAYMENT'
+        ? PAYMENT_STATUS_LABELS
+        : targetType === 'REFUND'
+          ? REFUND_STATUS_LABELS
+          : INSTALL_STATUS_LABELS;
+  return table[status]?.label ?? status;
+}
+
 export const ISSUE_TYPE_LABELS: Record<IssueType, StatusLabel> = {
   PAID_NOT_ISSUED: { label: '결제 후 미발급', tone: 'danger' },
-  NEEDS_ATTENTION: { label: '운영자 확인 필요', tone: 'danger' },
+  // NEEDS_ATTENTION is reached only when PG cancellation failed 3 times (backend README 2.2).
+  NEEDS_ATTENTION: { label: '환불 실패', tone: 'danger' },
   AMOUNT_MISMATCH: { label: '결제 금액 불일치', tone: 'warning' },
-  SIGNATURE_INVALID: { label: '콜백 서명 불일치', tone: 'warning' },
+  SIGNATURE_INVALID: { label: '서명 불일치', tone: 'warning' },
 };
 
 export const SIM_TYPE_LABELS: Record<SimType, string> = {
@@ -128,6 +173,12 @@ export function formatRefundBlockReason(detail: Pick<MySimDetail, 'orderStatus' 
 export function formatUsageDays(days: number): string {
   return `개통 시점부터 ${days}일 (24시간 × ${days})`;
 }
+
+/** Issuance waiting stage (backend `IssuanceWaiting.stage`). */
+export const WAITING_STAGE_LABELS: Record<IssuanceWaitingStage, { title: string; description: string }> = {
+  QUEUED: { title: '발급을 준비하고 있어요', description: '결제가 확인됐어요. 곧 공급사에 발급을 요청해요.' },
+  REQUESTED: { title: '공급사에서 발급하고 있어요', description: '결과가 나오면 이 화면에 바로 보여 드려요.' },
+};
 
 /** What the user can do while issuance is late (backend `IssuanceWaiting.actions`). */
 export const WAITING_ACTION_LABELS: Record<IssuanceWaitingAction, string> = {
