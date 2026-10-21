@@ -29,7 +29,7 @@
 - [x] **F0-3** 백엔드 계약: `lib/api/types.ts`(백엔드 응답 그대로), `lib/api/http-client.ts`(`BACKEND_URL`, `X-User-Id`/`X-Admin-Id`, 주문 생성 `Idempotency-Key`, 10초 타임아웃, `ProblemDetail` → `ApiError`), `client.ts`, `errors.ts`, `docs/api-coverage.md`
 - [x] **F0-4** `lib/format`: KST 날짜·시각, 금액, 용량, 국가명, 상태 라벨(주문·결제·설치·환불·이상 건), actor 문자열, 환불 불가 사유, 발급 대기 행동 문구 + Vitest(시간대 3개)
 - [x] **F0-5** 데모 신원: `lib/auth`(쿠키 없으면 기본값 `user-1`/`admin-1`, 고정 목록만 허용, server-only), 신원 바꾸기 칩(Server Action으로 쿠키 설정)
-- [ ] **F0-6** 셸과 공통 조각: 사용자 셸(하단 탭 홈 · 내 SIM, 화면 헤더 뒤로 · 제목 · 홈, 파란 세로 바 섹션 제목, 선택 칩 묶음, 하단 고정 CTA), 어드민 레이아웃(데스크톱 폭), 개발용 갤러리 `/ui`(프로덕션 404)
+- [x] **F0-6** 셸과 공통 조각: 사용자 셸(하단 탭 홈 · 내 SIM, 화면 헤더 뒤로 · 제목 · 홈, 파란 세로 바 섹션 제목, 선택 칩 묶음, 하단 고정 CTA), 어드민 레이아웃(데스크톱 폭), 개발용 갤러리 `/ui`(프로덕션 404)
 - 완료 기준: `npm run lint && npx tsc --noEmit && npm test && npm run build` 통과, 신원 칩으로 사용자·운영자 ID가 바뀌고, 셸·공통 조각이 `/ui`에서 모든 상태로 보임
 
 ## F1. 구매 흐름 화면 — `phase/f1-purchase` — 과제 2.3-⑥ 구매
