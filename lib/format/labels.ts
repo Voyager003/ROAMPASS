@@ -1,6 +1,7 @@
 import type {
   InstallStatus,
   IssuanceWaitingAction,
+  IssuanceWaitingStage,
   IssueType,
   MySimDetail,
   OrderStatus,
@@ -128,6 +129,12 @@ export function formatRefundBlockReason(detail: Pick<MySimDetail, 'orderStatus' 
 export function formatUsageDays(days: number): string {
   return `개통 시점부터 ${days}일 (24시간 × ${days})`;
 }
+
+/** Issuance waiting stage (backend `IssuanceWaiting.stage`). */
+export const WAITING_STAGE_LABELS: Record<IssuanceWaitingStage, { title: string; description: string }> = {
+  QUEUED: { title: '발급을 준비하고 있어요', description: '결제가 확인됐어요. 곧 공급사에 발급을 요청해요.' },
+  REQUESTED: { title: '공급사에서 발급하고 있어요', description: '결과가 나오면 이 화면에 바로 보여 드려요.' },
+};
 
 /** What the user can do while issuance is late (backend `IssuanceWaiting.actions`). */
 export const WAITING_ACTION_LABELS: Record<IssuanceWaitingAction, string> = {

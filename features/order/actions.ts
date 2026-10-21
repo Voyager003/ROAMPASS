@@ -60,3 +60,26 @@ export async function payOrderAction(_prev: PaymentFormState, formData: FormData
     return paymentErrorStateOf(error.code);
   }
 }
+
+export type RefundFormState = { error: string | null };
+
+/**
+ * User refund request while issuance has not been sent to the supplier yet (backend `UserRefundPolicy`,
+ * offered only when `waiting.actions` has REQUEST_REFUND). 202 → the order is REFUNDING; the page is
+ * refreshed to show it. A 409 means the order moved on meanwhile (e.g. issuance started): the message is
+ * shown and the page refreshed to its current step. Repeats are safe: the backend accepts one (409 for others).
+ */
+export async function refundOrderAction(_prev: RefundFormState, formData: FormData): Promise<RefundFormState> {
+  const orderNo = String(formData.get('orderNo') ?? '');
+  if (!orderNo) return { error: formatApiError('ORDER_NOT_FOUND') };
+
+  try {
+    await api.requestRefund(await getUserId(), orderNo);
+    refresh();
+    return { error: null };
+  } catch (error) {
+    if (!(error instanceof ApiError)) throw error;
+    if (error.status === 409) refresh();
+    return { error: formatApiError(error.code) };
+  }
+}

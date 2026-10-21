@@ -1,22 +1,24 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { OrderStatusBadge } from '@/components/status-badges';
 import { Section, SectionTitle } from '@/components/ui/section';
 import { getPlans } from '@/features/plan/queries';
 import { ApiError } from '@/lib/api/errors';
-import type { Order, Plan } from '@/lib/api/types';
+import type { MySimDetail, Order, Plan } from '@/lib/api/types';
 import { formatLocalDate } from '@/lib/format/kst';
 import { formatCountry, formatUsageDays, SIM_TYPE_LABELS } from '@/lib/format/labels';
 import { formatDataMb, formatMoney } from '@/lib/format/money';
 
 import { payOrderAction } from '../actions';
-import { getOrder } from '../queries';
+import { getMySim, getOrder } from '../queries';
+import { OrderProgress } from './order-progress';
 import { PaymentPanel } from './payment-panel';
 
 /**
- * Server part of /orders/[orderNo]. One page follows the order through its steps; this phase (F1-4)
- * renders the payment step (PENDING) and the expired screen. Later steps arrive in F1-5.
+ * Server part of /orders/[orderNo]. One page follows the order through its steps:
+ * PENDING → payment, EXPIRED → expired screen (both from GET /api/orders/{orderNo}, which has the
+ * payment deadline); every later status → OrderProgress from GET /api/sims/{orderNo}, which has the
+ * waiting info and refundability (docs/decisions.md #27).
  * Missing or another user's order → 404 (the backend answers 404 for both).
  */
 export async function OrderScreen({ params }: { params: Promise<{ orderNo: string }> }) {
@@ -26,16 +28,14 @@ export async function OrderScreen({ params }: { params: Promise<{ orderNo: strin
   try {
     order = await getOrder(orderNo);
   } catch (error) {
-    if (error instanceof ApiError) {
-      return (
-        <p role="alert" className="m-5 rounded-card bg-layer px-5 py-6 text-[15px] text-fg-critical">
-          주문을 불러오지 못했어요. 잠시 후 다시 시도해 주세요. ({error.code})
-        </p>
-      );
-    }
+    if (error instanceof ApiError) return <LoadError code={error.code} />;
     throw error;
   }
   if (!order) notFound();
+
+  if (order.status !== 'PENDING' && order.status !== 'EXPIRED') {
+    return <AfterPayment orderNo={order.orderNo} />;
+  }
 
   // The order carries only planId; country, days and data come from the cached plan list.
   // If that list is unavailable the summary simply omits them.
@@ -70,18 +70,33 @@ export async function OrderScreen({ params }: { params: Promise<{ orderNo: strin
           <OrderSummary order={order} plan={plan} />
         </div>
       );
-    default:
-      // F1-5 replaces this with the issuance-waiting / pickup / issued steps.
-      return (
-        <div className="space-y-2">
-          <Section>
-            <SectionTitle>주문 상태</SectionTitle>
-            <OrderStatusBadge status={order.status} />
-          </Section>
-          <OrderSummary order={order} plan={plan} />
-        </div>
-      );
   }
+}
+
+async function AfterPayment({ orderNo }: { orderNo: string }) {
+  let detail: MySimDetail | null;
+  try {
+    detail = await getMySim(orderNo);
+  } catch (error) {
+    if (error instanceof ApiError) return <LoadError code={error.code} />;
+    throw error;
+  }
+  if (!detail) notFound();
+  const plan = await findPlan(detail.planId);
+  return (
+    <div className="space-y-2">
+      <OrderProgress detail={detail} />
+      <OrderSummary order={detail} plan={plan} />
+    </div>
+  );
+}
+
+function LoadError({ code }: { code: string }) {
+  return (
+    <p role="alert" className="m-5 rounded-card bg-layer px-5 py-6 text-[15px] text-fg-critical">
+      주문을 불러오지 못했어요. 잠시 후 다시 시도해 주세요. ({code})
+    </p>
+  );
 }
 
 async function findPlan(planId: number): Promise<Plan | null> {
@@ -93,7 +108,9 @@ async function findPlan(planId: number): Promise<Plan | null> {
   }
 }
 
-function OrderSummary({ order, plan }: { order: Order; plan: Plan | null }) {
+type SummaryFields = Pick<Order, 'orderNo' | 'simType' | 'amount' | 'travelStartDate'>;
+
+function OrderSummary({ order, plan }: { order: SummaryFields; plan: Plan | null }) {
   return (
     <Section>
       <SectionTitle>주문 내용</SectionTitle>

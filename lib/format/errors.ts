@@ -14,6 +14,10 @@ const MESSAGES: Record<string, string> = {
   // Payment
   ORDER_NOT_FOUND: '주문을 찾지 못했어요.',
   ORDER_NOT_PAYABLE: '결제 기한이 지났거나 이미 결제된 주문이에요.',
+  // User refund
+  ORDER_NOT_REFUNDABLE: '지금은 환불을 요청할 수 없는 상태예요. 발급이 이미 시작됐을 수 있어요.',
+  SIM_NOT_REFUNDABLE: '설치하거나 개통한 SIM은 환불할 수 없어요.',
+  REFUND_CONFLICT: '다른 요청이 먼저 처리됐어요. 화면의 최신 상태를 확인해 주세요.',
 };
 
 export function formatApiError(code: string): string {

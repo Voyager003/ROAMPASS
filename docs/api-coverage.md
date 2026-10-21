@@ -12,10 +12,10 @@
 | 3 | `GET /api/orders/{orderNo}` (`expiresAt` 포함) | X-User-Id | `getOrder` | `/orders/[orderNo]` 결제 대기 단계의 만료 카운트다운·주문 요약·만료 화면(F1-4, `features/order/queries.ts` `getOrder`). 그 외 정보는 `GET /api/sims/{orderNo}`가 상위 집합 | [~] | 404 `ORDER_NOT_FOUND` |
 | 4 | `POST /api/orders/{orderNo}/pay` → `{paymentStatus, orderStatus}` | X-User-Id | `payOrder` | `/orders/[orderNo]` 결제하기(F1-4, `features/order/actions.ts` `payOrderAction`, 결과 문구 `features/order/payment.ts`) | [~] | 409 `ORDER_NOT_PAYABLE`·`PAYMENT_IN_PROGRESS`, `paymentStatus=REQUESTED`(PG 응답 유실) |
 | 5 | `GET /api/sims?page&size` | X-User-Id | `listMySims` | `/my/sims`(F1-9) | [~] | 400 `INVALID_PAGE` |
-| 6 | `GET /api/sims/{orderNo}` (`refundable`, `sim`, `waiting`) | X-User-Id | `getMySim` | `/orders/[orderNo]`(F1-4·F1-5 결제·발급 대기), `/my/sims/[orderNo]`(F1-9) | [~] | 404 `ORDER_NOT_FOUND`, `waiting.stage`·`overdue`·`actions` |
+| 6 | `GET /api/sims/{orderNo}` (`refundable`, `sim`, `waiting`) | X-User-Id | `getMySim` | `/orders/[orderNo]` 결제 후 단계(F1-5, `features/order/queries.ts` `getMySim`: `waiting`·결과 화면), `/my/sims/[orderNo]`(F1-9) | [~] | 404 `ORDER_NOT_FOUND`, `waiting.stage`·`overdue`·`actions` |
 | 7 | `POST /api/sims/{orderNo}/qr-viewed` → 204 | X-User-Id | `markQrViewed` | `/my/sims/[orderNo]` QR 열기(F1-10) | [~] | 404 `SIM_NOT_FOUND` |
 | 8 | `POST /api/orders/{orderNo}/usim/register` `{iccid}` | X-User-Id | `registerUsimIccid` | `/my/sims/[orderNo]` 유심 등록(F1-10) | [~] | 400 `INVALID_ICCID`, 409 `ORDER_NOT_REGISTRABLE`·`ICCID_ALREADY_REGISTERED`·`CONFLICT` |
-| 9 | `POST /api/orders/{orderNo}/refund` → 202 | X-User-Id | `requestRefund` | `/orders/[orderNo]` 발급 대기 `REQUEST_REFUND`(F1-5), `/my/sims/[orderNo]`(F1-9) | [~] | 409 `ORDER_NOT_REFUNDABLE`·`SIM_NOT_REFUNDABLE`·`REFUND_CONFLICT` |
+| 9 | `POST /api/orders/{orderNo}/refund` → 202 | X-User-Id | `requestRefund` | `/orders/[orderNo]` 발급 대기 `REQUEST_REFUND`(F1-5, `features/order/actions.ts` `refundOrderAction`), `/my/sims/[orderNo]`(F1-9) | [~] | 409 `ORDER_NOT_REFUNDABLE`·`SIM_NOT_REFUNDABLE`·`REFUND_CONFLICT` |
 | 10 | `GET /admin/orders?status&paymentStatus&installStatus&simType&from&to&page&size` | X-Admin-Id | `listAdminOrders` | `/admin/orders`(F1-6) | [~] | 401 `MISSING_ADMIN_ID`, 400 `INVALID_PAGE`, `asOf` |
 | 11 | `GET /admin/orders/{orderNo}` | X-Admin-Id | `getAdminOrder` | `/admin/orders/[orderNo]`(F1-7) | [~] | `timeline[].actor` 문자열, `callbacks[]` |
 | 12 | `GET /admin/issues` | X-Admin-Id | `listAdminIssues` | `/admin/issues`(F1-8) | [~] | 4개 묶음 + `stuckThresholdMinutes` |

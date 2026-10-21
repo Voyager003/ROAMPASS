@@ -41,7 +41,7 @@
 - [x] **F1-2** 구성 화면 `/plans/[country]`: 헤더 → 히어로(색 배경 + 문구) → "단 N원부터" → 기기 확인 안내 → 특징 3칸(SIM 종류별) → 여행 시작일 달력(하루만, KST 오늘~1년) → 사용기간 → 데이터 → SIM(존재하는 값만) → 사용자 가이드(주의 Callout + 탭 4개, SIM 종류별) → 옵션 선택 정보(시작일·SIM·사용기간·데이터·결제금액, "개통 시점부터 N일") → 하단 고정 "결제하러 가기"(요금제 1개로 좁혀지면 활성). 선택 상태는 `useState`
 - [x] **F1-3** 주문 생성: 폼 렌더 시 멱등 키(숨은 입력) → Server Action `createOrder` → `/orders/[orderNo]`로 redirect. 400·404·409 안내
 - [x] **F1-4** `/orders/[orderNo]` 결제 단계: 주문 요약, 결제 기한 카운트다운(`GET /api/orders/{orderNo}`의 `expiresAt`), 결제 버튼 → Server Action(`paymentStatus=REQUESTED`·409 `PAYMENT_IN_PROGRESS`는 "결제 확인 중"), 기한 만료 화면
-- [ ] **F1-5** `/orders/[orderNo]` 발급 대기: `<Poller>`(`waiting.pollIntervalSeconds`, 탭 숨김 시 정지, 끝 상태에서 종료) + `waiting.stage/overdue/actions`로 "발급이 늦을 때 할 수 있는 일" + 환불 요청 Server Action. 유심은 `PICKUP_READY` 화면(공항 수령 안내 → 내 SIM에서 ICCID 등록)
+- [x] **F1-5** `/orders/[orderNo]` 발급 대기: `<Poller>`(`waiting.pollIntervalSeconds`, 탭 숨김 시 정지, 끝 상태에서 종료) + `waiting.stage/overdue/actions`로 "발급이 늦을 때 할 수 있는 일" + 환불 요청 Server Action. 유심은 `PICKUP_READY` 화면(공항 수령 안내 → 내 SIM에서 ICCID 등록)
 
 어드민 (2.3-⑤ 화면)
 - [ ] **F1-6** `/admin/orders` 목록: 주문 상태·결제 상태(최근 시도)·설치 상태·SIM 종류·기간 필터 + 페이지네이션(최대 50)을 `searchParams`로. `asOf` 기반 "N초 전 데이터" + 새로고침 버튼
@@ -77,6 +77,6 @@
 
 | # | 질문 | 결정 Phase |
 |---|---|---|
-| 1 | 폴러 자체의 시간 상한 — 백엔드가 `waiting.resultDeadline`(요청 + 2분)·`overdue`를 주므로 그 값을 표시하고, 폴러를 언제 멈출지 | F1-5 |
+| 1 | ~~폴러 자체의 시간 상한~~ → 결정 #42(끝 상태 + 5분 상한) | F1-5 |
 | 2 | QR 코드를 라이브러리로 그릴지, 활성화 코드 텍스트로만 보여줄지 | F1-10 |
 | 3 | 백업 브랜치 `backup/before-restart`를 언제 지울지 | F3 |
