@@ -14,7 +14,6 @@ import { ApiError } from '@/lib/api/errors';
 import type { AdminOrderDetail, Instant, TimelineEntry, WithAsOf } from '@/lib/api/types';
 import { formatKstDateTime, formatKstLocalDateTime, formatLocalDate } from '@/lib/format/kst';
 import {
-  CALLBACK_OUTCOME_LABELS,
   formatActor,
   formatHistoryStatus,
   formatUsageDays,
@@ -27,6 +26,7 @@ import { formatMoney } from '@/lib/format/money';
 import { manualRefundAvailability, reissueAvailability } from '../action-policy';
 import { manualRefundAction, reissueAction } from '../actions';
 import { getAdminOrder } from '../queries';
+import { CallbackTable } from './callback-table';
 import { OperatorActions } from './operator-actions';
 
 /**
@@ -225,36 +225,7 @@ export async function OrderDetail({ params }: { params: Promise<{ orderNo: strin
       </Block>
 
       <Block title={`수신한 콜백·웹훅 (${callbacks.length})`}>
-        {callbacks.length === 0 ? (
-          <None />
-        ) : (
-          <Table>
-            <thead>
-              <tr>
-                <Th>수신</Th>
-                <Th>출처</Th>
-                <Th>이벤트</Th>
-                <Th>서명</Th>
-                <Th>처리 결과</Th>
-                <Th>메모</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {callbacks.map((c, i) => (
-                <tr key={`${c.receivedAt}-${i}`}>
-                  <Td>{formatKstDateTime(c.receivedAt)}</Td>
-                  <Td>{c.source === 'PG' ? 'PG' : '공급사'}</Td>
-                  <Td>{c.eventKey ?? '-'}</Td>
-                  <Td>{c.signatureOk ? '정상' : <span className="text-fg-critical">불일치</span>}</Td>
-                  <Td>
-                    <Badge tone={CALLBACK_OUTCOME_LABELS[c.outcome].tone}>{CALLBACK_OUTCOME_LABELS[c.outcome].label}</Badge>
-                  </Td>
-                  <Td>{c.note ?? '-'}</Td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        )}
+        {callbacks.length === 0 ? <None /> : <CallbackTable callbacks={callbacks} />}
       </Block>
     </div>
   );

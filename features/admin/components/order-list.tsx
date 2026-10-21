@@ -1,18 +1,14 @@
 import Link from 'next/link';
 
 import { AsOfIndicator } from '@/components/as-of-indicator';
-import { InstallStatusBadge, OrderStatusBadge, PaymentStatusBadge } from '@/components/status-badges';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Table, Td, Th } from '@/components/ui/table';
 import { ApiError } from '@/lib/api/errors';
 import type { AdminOrderSummary, Page, WithAsOf } from '@/lib/api/types';
-import { formatKstDateTime } from '@/lib/format/kst';
-import { SIM_TYPE_LABELS } from '@/lib/format/labels';
-import { formatMoney } from '@/lib/format/money';
 
 import { adminOrdersHref, pageCount, parseAdminOrderQuery, toAdminOrderFilter } from '../order-filter';
 import { listAdminOrders } from '../queries';
 import { OrderFilterForm } from './order-filter-form';
+import { OrderTable } from './order-table';
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -56,43 +52,7 @@ export async function OrderList({ searchParams }: { searchParams: Promise<Search
       {data.content.length === 0 ? (
         <EmptyState title="조건에 맞는 주문이 없어요" description="필터를 바꾸거나 초기화해 보세요." />
       ) : (
-        <Table>
-          <thead>
-            <tr>
-              <Th>주문번호</Th>
-              <Th>사용자</Th>
-              <Th>SIM</Th>
-              <Th className="text-right">금액</Th>
-              <Th>주문 상태</Th>
-              <Th>결제 상태</Th>
-              <Th>설치 상태</Th>
-              <Th>생성(KST)</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.content.map((order) => (
-              <tr key={order.orderNo}>
-                <Td>
-                  <Link
-                    href={`/admin/orders/${encodeURIComponent(order.orderNo)}`}
-                    className="font-medium text-fg-brand hover:underline"
-                  >
-                    {order.orderNo}
-                  </Link>
-                </Td>
-                <Td>{order.userId}</Td>
-                <Td>{SIM_TYPE_LABELS[order.simType]}</Td>
-                <Td className="text-right">{formatMoney(order.amount)}</Td>
-                <Td>
-                  <OrderStatusBadge status={order.orderStatus} />
-                </Td>
-                <Td>{order.paymentStatus ? <PaymentStatusBadge status={order.paymentStatus} /> : <Dash />}</Td>
-                <Td>{order.installStatus ? <InstallStatusBadge status={order.installStatus} /> : <Dash />}</Td>
-                <Td>{formatKstDateTime(order.createdAt)}</Td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <OrderTable orders={data.content} />
       )}
 
       <nav aria-label="페이지" className="mt-4 flex items-center justify-center gap-4 text-[14px]">
@@ -113,10 +73,6 @@ function PageLink({ href, children }: { href: string | null; children: string })
       {children}
     </Link>
   );
-}
-
-function Dash() {
-  return <span className="text-fg-subtle">-</span>;
 }
 
 export function OrderListSkeleton() {
