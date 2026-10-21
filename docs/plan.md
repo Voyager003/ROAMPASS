@@ -37,7 +37,7 @@
 **범위(2026-10-21, decisions #39):** 구매 흐름·어드민·내 SIM 화면과 로컬 연동 확인을 한 브랜치에서. sub-step마다 lint·tsc·test·build와 계약 대조로 검증하고, 실제 백엔드와 띄워 보는 확인은 F1-11에서 한 번에. 끝나면 PR.
 
 구매 흐름 (2.3-⑥ 구매)
-- [ ] **F1-1** 홈 `/`: 국가 카드 4개(JP·US·VN·TH) + 국가별 "단 N원부터"(국가 최저가). 요금제 목록은 서버에서 `'use cache'` + `cacheLife`
+- [x] **F1-1** 홈 `/`: 국가 카드 4개(JP·US·VN·TH) + 국가별 "단 N원부터"(국가 최저가). 요금제 목록은 서버에서 `'use cache'` + `cacheLife`
 - [ ] **F1-2** 구성 화면 `/plans/[country]`: 헤더 → 히어로(색 배경 + 문구) → "단 N원부터" → 기기 확인 안내 → 특징 3칸(SIM 종류별) → 여행 시작일 달력(하루만, KST 오늘~1년) → 사용기간 → 데이터 → SIM(존재하는 값만) → 사용자 가이드(주의 Callout + 탭 4개, SIM 종류별) → 옵션 선택 정보(시작일·SIM·사용기간·데이터·결제금액, "개통 시점부터 N일") → 하단 고정 "결제하러 가기"(요금제 1개로 좁혀지면 활성). 선택 상태는 `useState`
 - [ ] **F1-3** 주문 생성: 폼 렌더 시 멱등 키(숨은 입력) → Server Action `createOrder` → `/orders/[orderNo]`로 redirect. 400·404·409 안내
 - [ ] **F1-4** `/orders/[orderNo]` 결제 단계: 주문 요약, 결제 기한 카운트다운(`GET /api/orders/{orderNo}`의 `expiresAt`), 결제 버튼 → Server Action(`paymentStatus=REQUESTED`·409 `PAYMENT_IN_PROGRESS`는 "결제 확인 중"), 기한 만료 화면
