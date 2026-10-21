@@ -4,6 +4,7 @@ import { INSTALL_STATUSES, ISSUE_TYPES, ORDER_STATUSES, PAYMENT_STATUSES, REFUND
 
 import {
   formatActor,
+  formatHistoryStatus,
   formatCountry,
   formatRefundBlockReason,
   formatUsageDays,
@@ -64,5 +65,18 @@ describe('신호·사유·국가 표시', () => {
     // AA is a user-assigned code with no name; J1 is not a valid region code at all.
     expect(formatCountry('AA')).toBe('AA');
     expect(formatCountry('J1')).toBe('J1');
+  });
+});
+
+describe('타임라인 상태 문구', () => {
+  it('reads_the_status_in_the_table_of_its_target', () => {
+    expect(formatHistoryStatus('ORDER', 'PENDING')).toBe('결제 대기');
+    expect(formatHistoryStatus('REFUND', 'PENDING')).toBe('PG 취소 대기');
+    expect(formatHistoryStatus('PAYMENT', 'REQUESTED')).toBe('승인 대기');
+    expect(formatHistoryStatus('SIM_PROFILE', 'QR_VIEWED')).toBe('QR 확인함');
+  });
+
+  it('shows_unknown_status_as_given', () => {
+    expect(formatHistoryStatus('ORDER', 'SOMETHING_NEW')).toBe('SOMETHING_NEW');
   });
 });

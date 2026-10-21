@@ -17,10 +17,10 @@
 | 8 | `POST /api/orders/{orderNo}/usim/register` `{iccid}` | X-User-Id | `registerUsimIccid` | `/my/sims/[orderNo]` 유심 등록(F1-10) | [~] | 400 `INVALID_ICCID`, 409 `ORDER_NOT_REGISTRABLE`·`ICCID_ALREADY_REGISTERED`·`CONFLICT` |
 | 9 | `POST /api/orders/{orderNo}/refund` → 202 | X-User-Id | `requestRefund` | `/orders/[orderNo]` 발급 대기 `REQUEST_REFUND`(F1-5, `features/order/actions.ts` `refundOrderAction`), `/my/sims/[orderNo]`(F1-9) | [~] | 409 `ORDER_NOT_REFUNDABLE`·`SIM_NOT_REFUNDABLE`·`REFUND_CONFLICT` |
 | 10 | `GET /admin/orders?status&paymentStatus&installStatus&simType&from&to&page&size` | X-Admin-Id | `listAdminOrders` | `/admin/orders`(F1-6, `features/admin/queries.ts`, 필터는 `searchParams` → `features/admin/order-filter.ts`: KST 날짜 → UTC `from` 포함·`to` 다음날 0시 제외) | [~] | 401 `MISSING_ADMIN_ID`, 400 `INVALID_PAGE`, `asOf` |
-| 11 | `GET /admin/orders/{orderNo}` | X-Admin-Id | `getAdminOrder` | `/admin/orders/[orderNo]`(F1-7) | [~] | `timeline[].actor` 문자열, `callbacks[]` |
+| 11 | `GET /admin/orders/{orderNo}` | X-Admin-Id | `getAdminOrder` | `/admin/orders/[orderNo]`(F1-7, `features/admin/queries.ts`: 한 줄 타임라인 + 결제·발급·프로필·환불·콜백 기록) | [~] | `timeline[].actor` 문자열, `callbacks[]` |
 | 12 | `GET /admin/issues` | X-Admin-Id | `listAdminIssues` | `/admin/issues`(F1-8) | [~] | 4개 묶음 + `stuckThresholdMinutes` |
-| 13 | `POST /admin/orders/{orderNo}/refund` `{reason}` | X-Admin-Id | `refundOrder` | `/admin/orders/[orderNo]` 조치(F1-7) | [~] | 400 `ADMIN_REASON_REQUIRED`, 409 `ORDER_NOT_REFUNDABLE`·`SIM_NOT_REFUNDABLE`·`ACTION_CONFLICT` |
-| 14 | `POST /admin/orders/{orderNo}/reissue` `{reason}` | X-Admin-Id | `reissueOrder` | `/admin/orders/[orderNo]` 조치(F1-7) | [~] | 409 `ORDER_NOT_REISSUABLE`·`ACTION_CONFLICT` |
+| 13 | `POST /admin/orders/{orderNo}/refund` `{reason}` | X-Admin-Id | `refundOrder` | `/admin/orders/[orderNo]` 수동 환불(F1-7, `features/admin/actions.ts` `manualRefundAction`) | [~] | 400 `ADMIN_REASON_REQUIRED`, 409 `ORDER_NOT_REFUNDABLE`·`SIM_NOT_REFUNDABLE`·`ACTION_CONFLICT` |
+| 14 | `POST /admin/orders/{orderNo}/reissue` `{reason}` | X-Admin-Id | `reissueOrder` | `/admin/orders/[orderNo]` 발급 재시도(F1-7, `features/admin/actions.ts` `reissueAction`) | [~] | 409 `ORDER_NOT_REISSUABLE`·`ACTION_CONFLICT` |
 
 ## 백엔드 명세 중 프론트가 쓰지 않기로 한 것
 
