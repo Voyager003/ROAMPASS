@@ -19,9 +19,10 @@ import {
   TabsRoot,
   TabsTrigger,
 } from '@seed-design/react';
-import { useState } from 'react';
+import { useActionState, useState } from 'react';
 
 import { ChevronDownIcon } from '@/components/shell/icons';
+import type { OrderFormState } from '@/features/order/actions';
 import { BottomCta } from '@/components/ui/bottom-cta';
 import { ChoiceChips } from '@/components/ui/choice-chips';
 import { Section, SectionTitle } from '@/components/ui/section';
@@ -40,8 +41,10 @@ import { TravelDateCalendar } from './travel-date-calendar';
  * `useState` (docs/decisions.md #37). The plan list and today's KST date come from the Server
  * Component, so nothing here talks to the backend.
  *
- * The CTA is a form for the order-creation Server Action (`orderAction`, F1-3). Server Actions are the
- * only functions a Server Component can pass to a Client Component; until it is wired the CTA stays disabled.
+ * The CTA is a form for the order-creation Server Action, passed in by the Server Component (Server
+ * Actions are the only functions that may cross into a Client Component). `useActionState` gives the
+ * pending flag (button disabled while the request runs) and the error message
+ * (node_modules/next/dist/docs/01-app/02-guides/forms.md).
  */
 export function PlanConfigurator({
   countryName,
@@ -50,16 +53,20 @@ export function PlanConfigurator({
   today,
   maxDate,
   orderAction,
+  idempotencyKey,
 }: {
   countryName: string;
   plans: Plan[];
   minPrice: Money;
   today: LocalDate;
   maxDate: LocalDate;
-  orderAction?: (formData: FormData) => void | Promise<void>;
+  orderAction: (state: OrderFormState, formData: FormData) => Promise<OrderFormState>;
+  /** Created once when the screen rendered (docs/decisions.md #6). */
+  idempotencyKey: string;
 }) {
   const [startDate, setStartDate] = useState<LocalDate | null>(null);
   const [selection, setSelection] = useState<PlanSelection>(EMPTY_SELECTION);
+  const [formState, formAction, pending] = useActionState(orderAction, { error: null });
 
   const choose = (change: Partial<PlanSelection>) => setSelection((current) => applyChoice(plans, current, change));
   const plan = resolvePlan(plans, selection);
@@ -185,14 +192,20 @@ export function PlanConfigurator({
       </div>
 
       <BottomCta>
-        <form action={orderAction} className="grid">
+        <form action={formAction} className="grid gap-2">
+          {formState.error && (
+            <p role="alert" className="text-center text-[13px] text-fg-critical">
+              {formState.error}
+            </p>
+          )}
+          <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
           {complete && (
             <>
               <input type="hidden" name="planId" value={plan.planId} />
               <input type="hidden" name="travelStartDate" value={startDate} />
             </>
           )}
-          <ActionButton type="submit" size="large" disabled={!complete || !orderAction}>
+          <ActionButton type="submit" size="large" disabled={!complete || pending} loading={pending}>
             결제하러 가기
           </ActionButton>
         </form>

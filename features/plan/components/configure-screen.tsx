@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 
+import { createOrderAction } from '@/features/order/actions';
 import { ApiError } from '@/lib/api/errors';
 import type { Plan } from '@/lib/api/types';
 import { kstDateOf } from '@/lib/format/kst';
@@ -36,8 +37,10 @@ export async function ConfigureScreen({ params }: { params: Promise<{ country: s
   const plans = plansOfCountry(all, countryCode);
   if (plans.length === 0) notFound();
 
-  // After getPlans() (connection()), so "today" is the request's date, not the build's.
+  // After getPlans() (connection()), so "today" and the key belong to this request, not the build.
   const today = kstDateOf(new Date());
+  // One key per rendered order form: a resubmit of this form is the same attempt (docs/decisions.md #6).
+  const idempotencyKey = crypto.randomUUID();
   return (
     <PlanConfigurator
       countryName={formatCountry(countryCode)}
@@ -45,6 +48,8 @@ export async function ConfigureScreen({ params }: { params: Promise<{ country: s
       minPrice={cheapest(plans).price}
       today={today}
       maxDate={addYears(today, 1)}
+      orderAction={createOrderAction}
+      idempotencyKey={idempotencyKey}
     />
   );
 }

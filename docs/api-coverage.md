@@ -8,7 +8,7 @@
 | # | 백엔드 API | 헤더 | `lib/api/client.ts` 메서드 | 사용 화면 | 상태 | 확인한 응답·오류 |
 |---|---|---|---|---|---|---|
 | 1 | `GET /api/plans?country&simType&days&dataMb` | 없음 | `listPlans` | `/` 국가 카드·최저가(F1-1, `features/plan/queries.ts` `getPlans`), `/plans/[country]` 구성 화면(F1-2) | [~] | |
-| 2 | `POST /api/orders` `{planId, travelStartDate}` + `Idempotency-Key` → 201 | X-User-Id | `createOrder` | `/plans/[country]` 결제하러 가기(F1-3) | [~] | 400 `INVALID_REQUEST`·`INVALID_TRAVEL_START_DATE`·`INVALID_IDEMPOTENCY_KEY`, 404 `PLAN_NOT_FOUND`, 409 `IDEMPOTENCY_KEY_REUSED`, 같은 키 재제출 → 같은 주문 |
+| 2 | `POST /api/orders` `{planId, travelStartDate}` + `Idempotency-Key` → 201 | X-User-Id | `createOrder` | `/plans/[country]` 결제하러 가기(F1-3, `features/order/actions.ts` `createOrderAction`) | [~] | 400 `INVALID_REQUEST`·`INVALID_TRAVEL_START_DATE`·`INVALID_IDEMPOTENCY_KEY`, 404 `PLAN_NOT_FOUND`, 409 `IDEMPOTENCY_KEY_REUSED`, 같은 키 재제출 → 같은 주문 |
 | 3 | `GET /api/orders/{orderNo}` (`expiresAt` 포함) | X-User-Id | `getOrder` | `/orders/[orderNo]` 결제 대기 단계의 만료 카운트다운(F1-4). 그 외 정보는 `GET /api/sims/{orderNo}`가 상위 집합 | [~] | 404 `ORDER_NOT_FOUND` |
 | 4 | `POST /api/orders/{orderNo}/pay` → `{paymentStatus, orderStatus}` | X-User-Id | `payOrder` | `/orders/[orderNo]`(F1-4) | [~] | 409 `ORDER_NOT_PAYABLE`·`PAYMENT_IN_PROGRESS`, `paymentStatus=REQUESTED`(PG 응답 유실) |
 | 5 | `GET /api/sims?page&size` | X-User-Id | `listMySims` | `/my/sims`(F1-9) | [~] | 400 `INVALID_PAGE` |
