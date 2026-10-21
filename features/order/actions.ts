@@ -1,11 +1,14 @@
 'use server';
 
+import { refresh } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { api } from '@/lib/api/client';
 import { ApiError } from '@/lib/api/errors';
 import { getUserId } from '@/lib/auth/session';
 import { formatApiError } from '@/lib/format/errors';
+
+import { type PaymentFormState, paymentErrorStateOf, paymentStateOf } from './payment';
 
 export type OrderFormState = { error: string | null };
 
@@ -35,4 +38,25 @@ export async function createOrderAction(_prev: OrderFormState, formData: FormDat
   }
   // Outside try/catch: redirect() works by throwing.
   redirect(`/orders/${encodeURIComponent(orderNo)}`);
+}
+
+/**
+ * Pays the order (assignment §2.3-①). No key is sent: the backend makes one per attempt and refuses
+ * a second attempt while one is unresolved (409 PAYMENT_IN_PROGRESS), so a double click cannot
+ * charge twice (docs/decisions.md #6). After a result that changes the order (approved, or the order
+ * is no longer payable) the page is refreshed so it renders the order's new step.
+ */
+export async function payOrderAction(_prev: PaymentFormState, formData: FormData): Promise<PaymentFormState> {
+  const orderNo = String(formData.get('orderNo') ?? '');
+  if (!orderNo) return { kind: 'error', message: formatApiError('ORDER_NOT_FOUND') };
+
+  try {
+    const result = await api.payOrder(await getUserId(), orderNo);
+    if (result.orderStatus !== 'PENDING') refresh();
+    return paymentStateOf(result);
+  } catch (error) {
+    if (!(error instanceof ApiError)) throw error;
+    if (error.code === 'ORDER_NOT_PAYABLE') refresh();
+    return paymentErrorStateOf(error.code);
+  }
 }

@@ -11,6 +11,9 @@ const MESSAGES: Record<string, string> = {
   PLAN_NOT_FOUND: '요금제를 찾지 못했어요. 다시 골라 주세요.',
   IDEMPOTENCY_KEY_REUSED: '이 화면에서 이미 다른 내용으로 주문했어요. 새로고침한 뒤 다시 골라 주세요.',
   INVALID_REQUEST: '입력값을 다시 확인해 주세요.',
+  // Payment
+  ORDER_NOT_FOUND: '주문을 찾지 못했어요.',
+  ORDER_NOT_PAYABLE: '결제 기한이 지났거나 이미 결제된 주문이에요.',
 };
 
 export function formatApiError(code: string): string {

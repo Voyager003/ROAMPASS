@@ -9,8 +9,8 @@
 |---|---|---|---|---|---|---|
 | 1 | `GET /api/plans?country&simType&days&dataMb` | 없음 | `listPlans` | `/` 국가 카드·최저가(F1-1, `features/plan/queries.ts` `getPlans`), `/plans/[country]` 구성 화면(F1-2) | [~] | |
 | 2 | `POST /api/orders` `{planId, travelStartDate}` + `Idempotency-Key` → 201 | X-User-Id | `createOrder` | `/plans/[country]` 결제하러 가기(F1-3, `features/order/actions.ts` `createOrderAction`) | [~] | 400 `INVALID_REQUEST`·`INVALID_TRAVEL_START_DATE`·`INVALID_IDEMPOTENCY_KEY`, 404 `PLAN_NOT_FOUND`, 409 `IDEMPOTENCY_KEY_REUSED`, 같은 키 재제출 → 같은 주문 |
-| 3 | `GET /api/orders/{orderNo}` (`expiresAt` 포함) | X-User-Id | `getOrder` | `/orders/[orderNo]` 결제 대기 단계의 만료 카운트다운(F1-4). 그 외 정보는 `GET /api/sims/{orderNo}`가 상위 집합 | [~] | 404 `ORDER_NOT_FOUND` |
-| 4 | `POST /api/orders/{orderNo}/pay` → `{paymentStatus, orderStatus}` | X-User-Id | `payOrder` | `/orders/[orderNo]`(F1-4) | [~] | 409 `ORDER_NOT_PAYABLE`·`PAYMENT_IN_PROGRESS`, `paymentStatus=REQUESTED`(PG 응답 유실) |
+| 3 | `GET /api/orders/{orderNo}` (`expiresAt` 포함) | X-User-Id | `getOrder` | `/orders/[orderNo]` 결제 대기 단계의 만료 카운트다운·주문 요약·만료 화면(F1-4, `features/order/queries.ts` `getOrder`). 그 외 정보는 `GET /api/sims/{orderNo}`가 상위 집합 | [~] | 404 `ORDER_NOT_FOUND` |
+| 4 | `POST /api/orders/{orderNo}/pay` → `{paymentStatus, orderStatus}` | X-User-Id | `payOrder` | `/orders/[orderNo]` 결제하기(F1-4, `features/order/actions.ts` `payOrderAction`, 결과 문구 `features/order/payment.ts`) | [~] | 409 `ORDER_NOT_PAYABLE`·`PAYMENT_IN_PROGRESS`, `paymentStatus=REQUESTED`(PG 응답 유실) |
 | 5 | `GET /api/sims?page&size` | X-User-Id | `listMySims` | `/my/sims`(F1-9) | [~] | 400 `INVALID_PAGE` |
 | 6 | `GET /api/sims/{orderNo}` (`refundable`, `sim`, `waiting`) | X-User-Id | `getMySim` | `/orders/[orderNo]`(F1-4·F1-5 결제·발급 대기), `/my/sims/[orderNo]`(F1-9) | [~] | 404 `ORDER_NOT_FOUND`, `waiting.stage`·`overdue`·`actions` |
 | 7 | `POST /api/sims/{orderNo}/qr-viewed` → 204 | X-User-Id | `markQrViewed` | `/my/sims/[orderNo]` QR 열기(F1-10) | [~] | 404 `SIM_NOT_FOUND` |
