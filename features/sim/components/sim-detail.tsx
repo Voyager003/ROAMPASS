@@ -21,7 +21,10 @@ import {
 } from '@/lib/format/labels';
 import { formatDataMb, formatMoney } from '@/lib/format/money';
 
+import { registerIccidAction, revealActivationCodeAction } from '../actions';
 import { installSteps } from '../install-steps';
+import { ActivationCodeReveal } from './activation-code-reveal';
+import { IccidForm } from './iccid-form';
 import { RemainingTime } from './remaining-time';
 
 /**
@@ -72,10 +75,24 @@ export async function SimDetail({ params }: { params: Promise<{ orderNo: string 
             발급 진행 상황 보기
           </Link>
         )}
-        {detail.orderStatus === 'PICKUP_READY' && (
-          <p className="mt-3 text-[14px] text-fg">공항에서 유심을 받은 뒤 유심 뒷면의 ICCID를 등록하면 발급이 끝나요.</p>
-        )}
       </Section>
+
+      {detail.orderStatus === 'PICKUP_READY' && (
+        <Section>
+          <SectionTitle>유심 등록</SectionTitle>
+          <p className="mb-4 text-[14px] text-fg-muted">
+            공항에서 유심을 받은 뒤 카드 뒷면의 ICCID를 등록하면 발급이 끝나요. 등록하면 현지 개통을 요청해요.
+          </p>
+          <IccidForm orderNo={detail.orderNo} registerAction={registerIccidAction} />
+        </Section>
+      )}
+
+      {detail.sim && detail.simType === 'ESIM' && detail.orderStatus === 'ISSUED' && (
+        <Section>
+          <SectionTitle>eSIM 설치</SectionTitle>
+          <ActivationCodeReveal orderNo={detail.orderNo} revealAction={revealActivationCodeAction} />
+        </Section>
+      )}
 
       {detail.sim && <SimSection sim={detail.sim} />}
 
