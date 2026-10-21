@@ -16,7 +16,7 @@
 | 7 | `POST /api/sims/{orderNo}/qr-viewed` → 204 | X-User-Id | `markQrViewed` | `/my/sims/[orderNo]` QR 열기(F1-10) | [~] | 404 `SIM_NOT_FOUND` |
 | 8 | `POST /api/orders/{orderNo}/usim/register` `{iccid}` | X-User-Id | `registerUsimIccid` | `/my/sims/[orderNo]` 유심 등록(F1-10) | [~] | 400 `INVALID_ICCID`, 409 `ORDER_NOT_REGISTRABLE`·`ICCID_ALREADY_REGISTERED`·`CONFLICT` |
 | 9 | `POST /api/orders/{orderNo}/refund` → 202 | X-User-Id | `requestRefund` | `/orders/[orderNo]` 발급 대기 `REQUEST_REFUND`(F1-5, `features/order/actions.ts` `refundOrderAction`), `/my/sims/[orderNo]`(F1-9) | [~] | 409 `ORDER_NOT_REFUNDABLE`·`SIM_NOT_REFUNDABLE`·`REFUND_CONFLICT` |
-| 10 | `GET /admin/orders?status&paymentStatus&installStatus&simType&from&to&page&size` | X-Admin-Id | `listAdminOrders` | `/admin/orders`(F1-6) | [~] | 401 `MISSING_ADMIN_ID`, 400 `INVALID_PAGE`, `asOf` |
+| 10 | `GET /admin/orders?status&paymentStatus&installStatus&simType&from&to&page&size` | X-Admin-Id | `listAdminOrders` | `/admin/orders`(F1-6, `features/admin/queries.ts`, 필터는 `searchParams` → `features/admin/order-filter.ts`: KST 날짜 → UTC `from` 포함·`to` 다음날 0시 제외) | [~] | 401 `MISSING_ADMIN_ID`, 400 `INVALID_PAGE`, `asOf` |
 | 11 | `GET /admin/orders/{orderNo}` | X-Admin-Id | `getAdminOrder` | `/admin/orders/[orderNo]`(F1-7) | [~] | `timeline[].actor` 문자열, `callbacks[]` |
 | 12 | `GET /admin/issues` | X-Admin-Id | `listAdminIssues` | `/admin/issues`(F1-8) | [~] | 4개 묶음 + `stuckThresholdMinutes` |
 | 13 | `POST /admin/orders/{orderNo}/refund` `{reason}` | X-Admin-Id | `refundOrder` | `/admin/orders/[orderNo]` 조치(F1-7) | [~] | 400 `ADMIN_REASON_REQUIRED`, 409 `ORDER_NOT_REFUNDABLE`·`SIM_NOT_REFUNDABLE`·`ACTION_CONFLICT` |
