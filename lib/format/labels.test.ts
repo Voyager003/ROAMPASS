@@ -24,7 +24,7 @@ const groups: Array<[string, readonly string[], Record<string, StatusLabel>]> = 
   ['결제', PAYMENT_STATUSES, PAYMENT_STATUS_LABELS],
   ['설치', INSTALL_STATUSES, INSTALL_STATUS_LABELS],
   ['환불 요청', REFUND_STATUSES, REFUND_STATUS_LABELS],
-  ['이상 건', ISSUE_TYPES, ISSUE_TYPE_LABELS],
+  ['처리 대기', ISSUE_TYPES, ISSUE_TYPE_LABELS],
 ];
 
 describe.each(groups)('%s 상태 라벨', (_name, statuses, labels) => {

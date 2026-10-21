@@ -18,7 +18,7 @@ export default function AdminLayout({ children }: LayoutProps<'/admin'>) {
               주문
             </NavLink>
             <NavLink href="/admin/issues" tone="dark">
-              이상 건
+              처리 대기
             </NavLink>
           </nav>
           <div className="ml-auto flex items-center gap-4">

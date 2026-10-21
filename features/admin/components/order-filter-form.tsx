@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
+import { ChevronDownIcon } from '@/components/shell/icons';
 import {
   INSTALL_STATUSES,
   ORDER_STATUSES,
@@ -61,19 +62,19 @@ export function OrderFilterForm({ query }: { query: AdminOrderQuery }) {
         </Select>
       </Field>
       <Field label="생성일(KST) 부터">
-        <input type="date" name="from" defaultValue={query.fromDate} className={CONTROL} />
+        <input type="date" name="from" defaultValue={query.fromDate} className={`${CONTROL} px-3`} />
       </Field>
       <Field label="까지">
-        <input type="date" name="to" defaultValue={query.toDate} className={CONTROL} />
+        <input type="date" name="to" defaultValue={query.toDate} className={`${CONTROL} px-3`} />
       </Field>
       <Field label="페이지 크기">
-        <select name="size" defaultValue={String(query.size)} className={CONTROL}>
+        <SelectBox name="size" defaultValue={String(query.size)}>
           {PAGE_SIZES.map((n) => (
             <option key={n} value={n}>
               {n}건
             </option>
           ))}
-        </select>
+        </SelectBox>
       </Field>
       <div className="flex gap-2">
         <button type="submit" className="h-9 rounded-lg bg-brand px-4 text-[14px] font-bold text-fg-inverted">
@@ -87,7 +88,7 @@ export function OrderFilterForm({ query }: { query: AdminOrderQuery }) {
   );
 }
 
-const CONTROL = 'h-9 rounded-lg border border-line bg-layer px-2 text-[14px] text-fg';
+const CONTROL = 'h-9 rounded-lg border border-line bg-layer text-[14px] text-fg';
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -100,9 +101,24 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 
 function Select({ name, value, children }: { name: string; value: string | undefined; children: ReactNode }) {
   return (
-    <select name={name} defaultValue={value ?? ''} className={CONTROL}>
+    <SelectBox name={name} defaultValue={value ?? ''}>
       <option value="">전체</option>
       {children}
-    </select>
+    </SelectBox>
+  );
+}
+
+/**
+ * Native <select> without the browser's own arrow (its position cannot be styled and sat at the far
+ * right edge), with our chevron a fixed 10px from the edge and room reserved for it.
+ */
+function SelectBox({ name, defaultValue, children }: { name: string; defaultValue: string; children: ReactNode }) {
+  return (
+    <span className="relative inline-flex">
+      <select name={name} defaultValue={defaultValue} className={`${CONTROL} appearance-none pr-8 pl-3`}>
+        {children}
+      </select>
+      <ChevronDownIcon aria-hidden className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-fg-muted" />
+    </span>
   );
 }

@@ -98,9 +98,10 @@ export function formatHistoryStatus(targetType: HistoryTargetType, status: strin
 
 export const ISSUE_TYPE_LABELS: Record<IssueType, StatusLabel> = {
   PAID_NOT_ISSUED: { label: '결제 후 미발급', tone: 'danger' },
-  NEEDS_ATTENTION: { label: '운영자 확인 필요', tone: 'danger' },
+  // NEEDS_ATTENTION is reached only when PG cancellation failed 3 times (backend README 2.2).
+  NEEDS_ATTENTION: { label: '환불 실패', tone: 'danger' },
   AMOUNT_MISMATCH: { label: '결제 금액 불일치', tone: 'warning' },
-  SIGNATURE_INVALID: { label: '콜백 서명 불일치', tone: 'warning' },
+  SIGNATURE_INVALID: { label: '서명 불일치', tone: 'warning' },
 };
 
 export const SIM_TYPE_LABELS: Record<SimType, string> = {

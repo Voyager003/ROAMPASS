@@ -3,13 +3,16 @@ import { Suspense } from 'react';
 import { PageHeader } from '@/components/ui/page-header';
 import { IssueList, IssueListSkeleton } from '@/features/admin/components/issue-list';
 
-/** Admin issues: the header is static; the groups are read at request time and stream under <Suspense>. */
-export default function AdminIssuesPage() {
+/**
+ * "처리 대기": orders and notifications automatic processing could not finish (backend GET /admin/issues).
+ * The header is static; the groups depend on searchParams and stream under <Suspense>.
+ */
+export default function AdminIssuesPage({ searchParams }: PageProps<'/admin/issues'>) {
   return (
     <>
-      <PageHeader title="이상 건" description="결제 후 미발급, 운영자 확인 필요, 결제 금액 불일치, 서명 불일치를 모아 봐요." />
+      <PageHeader title="처리 대기" description="자동 처리로 끝나지 않아 운영자가 확인하거나 조치해야 하는 건이에요." />
       <Suspense fallback={<IssueListSkeleton />}>
-        <IssueList />
+        <IssueList searchParams={searchParams} />
       </Suspense>
     </>
   );
