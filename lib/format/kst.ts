@@ -71,7 +71,11 @@ export function formatKstLocalDateTime(value: KstDateTime): string {
  * "5분 남음", "1분 미만 남음", or "만료됨" once passed.
  */
 export function formatRemaining(expiresAt: Instant, now: Date): string {
-  const ms = Date.parse(expiresAt) - now.getTime();
+  return formatRemainingMs(Date.parse(expiresAt) - now.getTime());
+}
+
+/** Same text from a remaining duration (the backend's `sim.remainingSeconds` × 1000). */
+export function formatRemainingMs(ms: number): string {
   if (ms <= 0) return '만료됨';
   const totalMinutes = Math.floor(ms / 60_000);
   const days = Math.floor(totalMinutes / (24 * 60));

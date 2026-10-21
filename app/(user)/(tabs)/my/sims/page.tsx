@@ -1,10 +1,15 @@
-import { EmptyState } from '@/components/ui/empty-state';
+import { Suspense } from 'react';
 
-// Placeholder until My SIMs (F3).
-export default function MySimsPage() {
+import { SimList, SimListSkeleton } from '@/features/sim/components/sim-list';
+
+/** My SIMs tab: the list depends on the user cookie and searchParams, so it streams under <Suspense>. */
+export default function MySimsPage({ searchParams }: PageProps<'/my/sims'>) {
   return (
-    <div className="p-5">
-      <EmptyState title="내 SIM 화면은 F3에서 만들어요" />
-    </div>
+    <>
+      <h1 className="px-5 pt-4 text-[20px] font-bold text-fg">내 SIM</h1>
+      <Suspense fallback={<SimListSkeleton />}>
+        <SimList searchParams={searchParams} />
+      </Suspense>
+    </>
   );
 }

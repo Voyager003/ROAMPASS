@@ -7,6 +7,7 @@ import {
   formatKstLocalDateTime,
   formatLocalDate,
   formatRemaining,
+  formatRemainingMs,
   kstDateOf,
 } from './kst';
 
@@ -66,5 +67,12 @@ describe('어드민 데이터 시점', () => {
 
   it('never_shows_negative_age_when_clocks_skew', () => {
     expect(formatAge('2026-05-01T00:10:05Z', now)).toBe('0초 전');
+  });
+});
+
+describe('남은 시간(초 단위 입력)', () => {
+  it('formats_backend_remaining_seconds', () => {
+    expect(formatRemainingMs((3 * 24 * 3600 + 4 * 3600) * 1000)).toBe('3일 4시간 남음');
+    expect(formatRemainingMs(0)).toBe('만료됨');
   });
 });
