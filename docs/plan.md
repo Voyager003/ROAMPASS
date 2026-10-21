@@ -38,7 +38,7 @@
 
 구매 흐름 (2.3-⑥ 구매)
 - [x] **F1-1** 홈 `/`: 국가 카드 4개(JP·US·VN·TH) + 국가별 "단 N원부터"(국가 최저가). 요금제 목록은 서버에서 `'use cache'` + `cacheLife`
-- [ ] **F1-2** 구성 화면 `/plans/[country]`: 헤더 → 히어로(색 배경 + 문구) → "단 N원부터" → 기기 확인 안내 → 특징 3칸(SIM 종류별) → 여행 시작일 달력(하루만, KST 오늘~1년) → 사용기간 → 데이터 → SIM(존재하는 값만) → 사용자 가이드(주의 Callout + 탭 4개, SIM 종류별) → 옵션 선택 정보(시작일·SIM·사용기간·데이터·결제금액, "개통 시점부터 N일") → 하단 고정 "결제하러 가기"(요금제 1개로 좁혀지면 활성). 선택 상태는 `useState`
+- [x] **F1-2** 구성 화면 `/plans/[country]`: 헤더 → 히어로(색 배경 + 문구) → "단 N원부터" → 기기 확인 안내 → 특징 3칸(SIM 종류별) → 여행 시작일 달력(하루만, KST 오늘~1년) → 사용기간 → 데이터 → SIM(존재하는 값만) → 사용자 가이드(주의 Callout + 탭 4개, SIM 종류별) → 옵션 선택 정보(시작일·SIM·사용기간·데이터·결제금액, "개통 시점부터 N일") → 하단 고정 "결제하러 가기"(요금제 1개로 좁혀지면 활성). 선택 상태는 `useState`
 - [ ] **F1-3** 주문 생성: 폼 렌더 시 멱등 키(숨은 입력) → Server Action `createOrder` → `/orders/[orderNo]`로 redirect. 400·404·409 안내
 - [ ] **F1-4** `/orders/[orderNo]` 결제 단계: 주문 요약, 결제 기한 카운트다운(`GET /api/orders/{orderNo}`의 `expiresAt`), 결제 버튼 → Server Action(`paymentStatus=REQUESTED`·409 `PAYMENT_IN_PROGRESS`는 "결제 확인 중"), 기한 만료 화면
 - [ ] **F1-5** `/orders/[orderNo]` 발급 대기: `<Poller>`(`waiting.pollIntervalSeconds`, 탭 숨김 시 정지, 끝 상태에서 종료) + `waiting.stage/overdue/actions`로 "발급이 늦을 때 할 수 있는 일" + 환불 요청 Server Action. 유심은 `PICKUP_READY` 화면(공항 수령 안내 → 내 SIM에서 ICCID 등록)
