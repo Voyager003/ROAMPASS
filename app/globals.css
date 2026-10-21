@@ -1,26 +1,55 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/*
+ * Design tokens are SEED Design's (Apache-2.0, @seed-design/css); this file only maps them to
+ * Tailwind utility names and replaces SEED's brand color. `inline` makes utilities reference the
+ * SEED variables directly, so SEED's light/dark switching keeps working.
+ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-fg: var(--seed-color-fg-neutral);
+  --color-fg-muted: var(--seed-color-fg-neutral-muted);
+  --color-fg-subtle: var(--seed-color-fg-neutral-subtle);
+  --color-fg-brand: var(--seed-color-fg-brand);
+  --color-fg-critical: var(--seed-color-fg-critical);
+  --color-fg-inverted: var(--seed-color-fg-neutral-inverted);
+  --color-layer: var(--seed-color-bg-layer-default);
+  --color-basement: var(--seed-color-bg-layer-basement);
+  --color-weak: var(--seed-color-bg-neutral-weak);
+  --color-inverted: var(--seed-color-bg-neutral-inverted);
+  --color-line: var(--seed-color-stroke-neutral-muted);
+  --color-brand: var(--seed-color-bg-brand-solid);
+
+  --font-sans: var(--seed-font-family);
+
+  --radius-card: 16px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/*
+ * Brand color: SEED ships Karrot's carrot orange. Karrot's brand resources are excluded from the
+ * Apache license (package NOTICE), so ROAMPASS uses its own blue. Same selectors as base.css,
+ * declared later, so these win in the light theme (the app is light-only).
+ */
+:root,
+:root[data-seed-color-mode="light-only"] {
+  --seed-color-bg-brand-solid: #2b6ff2;
+  --seed-color-bg-brand-solid-pressed: #1f5bd1;
+  --seed-color-bg-brand-weak: #eaf1fe;
+  --seed-color-bg-brand-weak-pressed: #d9e6fd;
+  --seed-color-fg-brand: #2b6ff2;
+  --seed-color-fg-brand-contrast: #1f5bd1;
+  --seed-color-stroke-brand-solid: #2b6ff2;
+  --seed-color-stroke-brand-weak: #bcd3fb;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-basement);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  word-break: keep-all;
+}
+
+/* Visible keyboard focus everywhere (quality floor). */
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--seed-color-stroke-focus-ring);
+  outline-offset: 2px;
 }
