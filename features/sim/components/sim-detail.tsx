@@ -1,3 +1,4 @@
+import { CalloutContent, CalloutDescription, CalloutRoot, CalloutTitle } from '@seed-design/react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -112,16 +113,25 @@ export async function SimDetail({ params }: { params: Promise<{ orderNo: string 
             </>
           )}
         </dl>
-        <div className="mt-5 border-t border-line pt-4">
+        <div className="mt-5 grid gap-3 border-t border-line pt-4">
+          {/* Refund state as a titled callout so the verdict stands out from the facts above. */}
           {detail.refundable ? (
-            <div className="grid gap-2">
-              <p className="text-[14px] text-fg">
-                지금 환불할 수 있어요. 설치하거나 개통한 뒤에는 환불할 수 없어요.
-              </p>
+            <>
+              <CalloutRoot tone="informative">
+                <CalloutContent>
+                  <CalloutTitle>지금 환불할 수 있어요</CalloutTitle>
+                  <CalloutDescription>설치하거나 개통한 뒤에는 환불할 수 없어요.</CalloutDescription>
+                </CalloutContent>
+              </CalloutRoot>
               <RefundButton orderNo={detail.orderNo} refundAction={refundOrderAction} />
-            </div>
+            </>
           ) : (
-            <p className="text-[14px] text-fg-muted">환불 불가: {formatRefundBlockReason(detail)}</p>
+            <CalloutRoot tone="neutral">
+              <CalloutContent>
+                <CalloutTitle>환불할 수 없어요</CalloutTitle>
+                <CalloutDescription>{formatRefundBlockReason(detail)}</CalloutDescription>
+              </CalloutContent>
+            </CalloutRoot>
           )}
         </div>
       </Section>
