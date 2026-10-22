@@ -7,6 +7,7 @@ import type {
   AdminOrderFilter,
   AdminOrderSummary,
   CreateOrderRequest,
+  DemoSimState,
   MySimDetail,
   MySimSummary,
   OperatorActionRequest,
@@ -15,6 +16,7 @@ import type {
   OrderNo,
   Page,
   PayResult,
+  PickupCard,
   Plan,
   PlanFilter,
   ProblemDetail,
@@ -167,6 +169,19 @@ export const httpApi = {
       method: 'POST',
       headers: asUser(userId),
       body: { iccid },
+    });
+  },
+  // Demo only: imitates install / activation / airport pickup by changing the mock supplier (docs/decisions.md #48)
+  demoSimStep(userId: string, orderNo: OrderNo, step: 'install' | 'activate'): Promise<DemoSimState> {
+    return request<DemoSimState>(`/api/sims/${encodeURIComponent(orderNo)}/demo/${step}`, {
+      method: 'POST',
+      headers: asUser(userId),
+    });
+  },
+  demoPickupCard(userId: string, orderNo: OrderNo): Promise<PickupCard> {
+    return request<PickupCard>(`/api/orders/${encodeURIComponent(orderNo)}/demo/pickup-card`, {
+      method: 'POST',
+      headers: asUser(userId),
     });
   },
 

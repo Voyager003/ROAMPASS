@@ -58,3 +58,42 @@ export async function registerIccidAction(_prev: RegisterState, formData: FormDa
     return { error: formatApiError(error.code) };
   }
 }
+
+export type DemoStepState = { error: string | null };
+
+/**
+ * Demo: imitates installing the eSIM on a device or activating it abroad by changing the mock
+ * supplier's profile (docs/decisions.md #48). The backend applies the supplier's answer through the
+ * same path as its polling, so the page is refreshed to show the new install status and, after
+ * activation, the remaining time. A 409 also refreshes (the SIM moved on meanwhile).
+ */
+export async function demoSimStepAction(_prev: DemoStepState, formData: FormData): Promise<DemoStepState> {
+  const orderNo = String(formData.get('orderNo') ?? '');
+  const step = formData.get('step') === 'activate' ? 'activate' : 'install';
+  try {
+    await api.demoSimStep(await getUserId(), orderNo, step);
+    refresh();
+    return { error: null };
+  } catch (error) {
+    if (!(error instanceof ApiError)) throw error;
+    if (error.status === 409) refresh();
+    return { error: formatApiError(error.code) };
+  }
+}
+
+export type PickupCardState = { iccid: string } | { error: string };
+
+/**
+ * Demo: stands in for picking up the USIM at the airport. Returns the card number the mock supplier
+ * hands out for this order (same number on every call); the form fills it in and the user still
+ * presses "ICCID 등록" (docs/decisions.md #48).
+ */
+export async function pickupCardAction(orderNo: string): Promise<PickupCardState> {
+  try {
+    const card = await api.demoPickupCard(await getUserId(), orderNo);
+    return { iccid: card.iccid };
+  } catch (error) {
+    if (error instanceof ApiError) return { error: formatApiError(error.code) };
+    throw error;
+  }
+}

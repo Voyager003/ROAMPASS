@@ -274,6 +274,12 @@ export type MySimDetail = {
   waiting: IssuanceWaiting | null;
 };
 
+/** Demo API result (POST /api/sims/{orderNo}/demo/install|activate): install status after the change. */
+export type DemoSimState = { status: InstallStatus };
+
+/** Demo API result (POST /api/orders/{orderNo}/demo/pickup-card): the card number the supplier hands out. */
+export type PickupCard = { iccid: string };
+
 /** Backend `UsimRegistrationResult`. installStatus ISSUED means activation is not confirmed yet (polling). */
 export type UsimRegistrationResult = {
   orderNo: OrderNo;

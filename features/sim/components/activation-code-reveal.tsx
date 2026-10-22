@@ -26,7 +26,7 @@ export function ActivationCodeReveal({
     return (
       <div className="grid gap-3">
         <p className="text-[14px] text-fg">
-          기기의 eSIM 추가 메뉴에서 수동 입력을 고르고 아래 정보를 입력하세요. 설치하는 동안 기기가 인터넷에 연결돼 있어야 해요.
+          실제 기기라면 eSIM 추가 메뉴의 수동 입력에 아래 정보를 넣어 설치해요. 이 시연에서는 아래 &lsquo;SIM 상태&rsquo;의 버튼으로 설치·개통을 흉내 내요.
         </p>
         {parts ? (
           <>

@@ -22,9 +22,11 @@ import {
 } from '@/lib/format/labels';
 import { formatDataMb, formatMoney } from '@/lib/format/money';
 
-import { registerIccidAction, revealActivationCodeAction } from '../actions';
+import { demoSimStepAction, pickupCardAction, registerIccidAction, revealActivationCodeAction } from '../actions';
+import { demoSimButtons } from '../demo';
 import { installSteps } from '../install-steps';
 import { ActivationCodeReveal } from './activation-code-reveal';
+import { DemoSimButtons } from './demo-sim-buttons';
 import { IccidForm } from './iccid-form';
 import { RemainingTime } from './remaining-time';
 
@@ -84,7 +86,7 @@ export async function SimDetail({ params }: { params: Promise<{ orderNo: string 
           <p className="mb-4 text-[14px] text-fg-muted">
             공항에서 유심을 받은 뒤 카드 뒷면의 ICCID를 등록하면 발급이 끝나요. 등록하면 현지 개통을 요청해요.
           </p>
-          <IccidForm orderNo={detail.orderNo} registerAction={registerIccidAction} />
+          <IccidForm orderNo={detail.orderNo} registerAction={registerIccidAction} pickupAction={pickupCardAction} />
         </Section>
       )}
 
@@ -95,7 +97,7 @@ export async function SimDetail({ params }: { params: Promise<{ orderNo: string 
         </Section>
       )}
 
-      {detail.sim && <SimSection sim={detail.sim} />}
+      {detail.sim && <SimSection detail={detail} sim={detail.sim} />}
 
       <Section>
         <SectionTitle>결제·환불</SectionTitle>
@@ -139,7 +141,13 @@ export async function SimDetail({ params }: { params: Promise<{ orderNo: string 
   );
 }
 
-function SimSection({ sim }: { sim: SimInfo }) {
+function SimSection({ detail, sim }: { detail: MySimDetail; sim: SimInfo }) {
+  const demo = demoSimButtons({
+    simType: detail.simType,
+    orderStatus: detail.orderStatus,
+    installStatus: sim.installStatus,
+    deleted: sim.deleted,
+  });
   return (
     <Section>
       <SectionTitle>SIM 상태</SectionTitle>
@@ -187,6 +195,11 @@ function SimSection({ sim }: { sim: SimInfo }) {
         <p className="mt-3 text-[13px] text-fg-muted">사용 기간은 현지에서 개통한 시점부터 계산돼요.</p>
       )}
       {sim.deleted && <p className="mt-3 text-[13px] text-fg-critical">기기에서 삭제된 SIM이에요.</p>}
+      {(demo.install || demo.activate) && (
+        <div className="mt-5 border-t border-line pt-4">
+          <DemoSimButtons orderNo={detail.orderNo} buttons={demo} stepAction={demoSimStepAction} />
+        </div>
+      )}
     </Section>
   );
 }
