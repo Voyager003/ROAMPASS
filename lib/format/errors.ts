@@ -24,6 +24,9 @@ const MESSAGES: Record<string, string> = {
   ORDER_NOT_REGISTRABLE: '등록할 수 없는 주문이에요. 이미 등록됐는지 화면을 확인해 주세요.',
   ICCID_ALREADY_REGISTERED: '이미 다른 주문에 등록된 ICCID예요. 받은 유심의 번호인지 확인해 주세요.',
   CONFLICT: '이미 등록된 정보와 겹쳐요. 번호를 다시 확인해 주세요.',
+  // Demo (install / activate / airport pickup)
+  DEMO_NOT_APPLICABLE: '지금 상태에서는 할 수 없어요. 화면의 최신 상태를 확인해 주세요.',
+  SUPPLIER_UNAVAILABLE: 'SIM 공급사가 응답하지 않아요. 잠시 후 다시 시도해 주세요.',
 };
 
 export function formatApiError(code: string): string {
