@@ -21,9 +21,9 @@
 | 12 | `GET /admin/issues` | X-Admin-Id | `listAdminIssues` | `/admin/issues` "처리 대기"(F1-8, `features/admin/queries.ts`. `?type=` 묶음 필터 + 표, 주문 묶음은 상세 링크, 통지 묶음은 응답에 주문번호가 없어 링크 없음) | [x] | 4개 묶음 + `stuckThresholdMinutes` |
 | 13 | `POST /admin/orders/{orderNo}/refund` `{reason}` | X-Admin-Id | `refundOrder` | `/admin/orders/[orderNo]` 수동 환불(F1-7, `features/admin/actions.ts` `manualRefundAction`) | [x] | 400 `ADMIN_REASON_REQUIRED`, 409 `ORDER_NOT_REFUNDABLE`·`SIM_NOT_REFUNDABLE`·`ACTION_CONFLICT` |
 | 14 | `POST /admin/orders/{orderNo}/reissue` `{reason}` | X-Admin-Id | `reissueOrder` | `/admin/orders/[orderNo]` 발급 재시도(F1-7, `features/admin/actions.ts` `reissueAction`) | [x] | 409 `ORDER_NOT_REISSUABLE`·`ACTION_CONFLICT` |
-| 15 | `POST /api/sims/{orderNo}/demo/install` → `{status}` | X-User-Id | `demoSimStep(…, 'install')` | `/my/sims/[orderNo]` 시연 "기기에 설치하기"(F3, `demoSimStepAction`, 표시 규칙 `features/sim/demo.ts`) | [~] | 409 `DEMO_NOT_APPLICABLE`, 503 `SUPPLIER_UNAVAILABLE` |
-| 16 | `POST /api/sims/{orderNo}/demo/activate` → `{status}` | X-User-Id | `demoSimStep(…, 'activate')` | `/my/sims/[orderNo]` 시연 "현지에서 개통하기"(F3, `demoSimStepAction`) | [~] | 409 `DEMO_NOT_APPLICABLE`, 503 `SUPPLIER_UNAVAILABLE` |
-| 17 | `POST /api/orders/{orderNo}/demo/pickup-card` → `{iccid}` | X-User-Id | `demoPickupCard` | `/my/sims/[orderNo]` 유심 등록의 시연 "공항에서 유심 받기"(F3, `pickupCardAction`, 입력란 채움) | [~] | 409 `DEMO_NOT_APPLICABLE`, 503 `SUPPLIER_UNAVAILABLE` |
+| 15 | `POST /api/sims/{orderNo}/demo/install` → `{status}` | X-User-Id | `demoSimStep(…, 'install')` | `/my/sims/[orderNo]` 시연 "기기에 설치하기"(F3, `demoSimStepAction`, 표시 규칙 `features/sim/demo.ts`) | [x] | 409 `DEMO_NOT_APPLICABLE`, 503 `SUPPLIER_UNAVAILABLE` |
+| 16 | `POST /api/sims/{orderNo}/demo/activate` → `{status}` | X-User-Id | `demoSimStep(…, 'activate')` | `/my/sims/[orderNo]` 시연 "현지에서 개통하기"(F3, `demoSimStepAction`) | [x] | 409 `DEMO_NOT_APPLICABLE`, 503 `SUPPLIER_UNAVAILABLE` |
+| 17 | `POST /api/orders/{orderNo}/demo/pickup-card` → `{iccid}` | X-User-Id | `demoPickupCard` | `/my/sims/[orderNo]` 유심 등록의 시연 "공항에서 유심 받기"(F3, `pickupCardAction`, 입력란 채움) | [x] | 409 `DEMO_NOT_APPLICABLE`, 503 `SUPPLIER_UNAVAILABLE` |
 
 ## 백엔드 명세 중 프론트가 쓰지 않기로 한 것
 
